@@ -1,4 +1,5 @@
 wol_bot_static.py
+data_wol/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
