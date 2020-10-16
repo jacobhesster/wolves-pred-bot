@@ -40,20 +40,21 @@ def refresh_scores():
 
     #get games that need their point values to be updated
     update = pred[pred['pts'].isnull()]
+
     for index, row in update.iterrows():
         game = results[(results['game'] == row['game']) & (results['opp_score'].notnull())]
 
         #if game has been played and has a result, add the points, otherwise pass
         if game.shape[0] > 0:
             total_pts = 0
-
-            if (game['opp_score'][0] == row['opp_score']):
+            ind = min(list(game.index))
+            if (game['opp_score'][ind] == row['opp_score']):
                 total_pts += 1
 
-            if (game['wolves'][0] == row['wolves']):
+            if (game['wolves'][ind] == row['wolves']):
                 total_pts += 1
 
-            if (game_result(game['wolves'][0], game['opp_score'][0]) == game_result(row['wolves'], row['opp_score'])):
+            if (game_result(game['wolves'][ind], game['opp_score'][ind]) == game_result(row['wolves'], row['opp_score'])):
                 total_pts += 2
 
             pred.at[index, 'pts'] = int(total_pts)
@@ -93,20 +94,21 @@ async def score(ctx, game, score):
         time = results_score[results_score['game'] == game]['time']
         fixture = dt.datetime.strptime('{} {}'.format(date[min(date.index)], time[min(time.index)]), '%m/%d/%Y %H:%M')
 
-        if (fixture < dt.datetime.now()):
-            message = "It's too late to predict {} {}.".format(teams[game[0:2]], ha[game[2]])
+        #if (fixture < dt.datetime.now()):
+        #    message = "It's too late to predict {} {}.".format(teams[game[0:2]], ha[game[2]])
+        #else:
+
+        nrow = [author, game, score_parts[1], score_parts[0], nan]  # data has opp first, wolves second
+
+        #overwrite if exists
+        overwrite_check = pred_score[(pred_score['user'] == author) & (pred_score['game'] == game)]
+        if overwrite_check.shape[0] == 1:
+            pred_score.loc[list(overwrite_check.index)[0]] = nrow
         else:
-            nrow = [author, game, score_parts[1], score_parts[0], nan]  # data has opp first, wolves second
+            pred_score = pred_score.append(pd.DataFrame([nrow], columns=pred_cols), ignore_index=True)
 
-            #overwrite if exists
-            overwrite_check = pred_score[(pred_score['user'] == author) & (pred_score['game'] == game)]
-            if overwrite_check.shape[0] == 1:
-                pred_score.loc[list(overwrite_check.index)[0]] = nrow
-            else:
-                pred_score = pred_score.append(pd.DataFrame([nrow], columns=pred_cols), ignore_index=True)
-
-            pred_score.to_csv('data_wol/predictions.csv', index=False)
-            message = "Score recorded!"
+        pred_score.to_csv('data_wol/predictions.csv', index=False)
+        message = "Score recorded!"
     else:
         nexts = results_score[results_score['wolves'].isnull()]['game']
         next = nexts[min(nexts.index)]
