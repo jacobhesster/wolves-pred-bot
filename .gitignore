@@ -126,3 +126,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+data_wol/predictions.csv
+.idea/wolves-pred-bot.iml
+.idea/workspace-DEV00172.xml
+.idea/workspace.xml
+data_wol/predictions.csv
+data_wol/results.csv
+.idea/wolves-pred-bot.iml

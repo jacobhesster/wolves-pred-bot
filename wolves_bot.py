@@ -1,8 +1,9 @@
-import discord
 from discord.ext import commands
+import discord
 import pandas as pd
 from numpy import nan
 import datetime as dt
+import plotly.graph_objects as go
 from wol_bot_static import token, teams, ha, pred_cols
 
 # token - Discord bot token
@@ -126,7 +127,7 @@ async def format(ctx):
     await ctx.message.author.send(message)
 
 @bot.command()
-async def leaderboard(ctx):
+async def short_lb(ctx):
     pred_lb = pd.read_csv('data_wol/predictions.csv')
     lb = pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
     top_5 = lb.nlargest(5, 'pts')
@@ -137,6 +138,23 @@ async def leaderboard(ctx):
     message += '...\n{:^8}|{:^18}|{:^7}```'.format(make_ordinal(list(user.index)[0] + 1), list(user['user'])[0].split('#')[0],
                                               int(list(user['pts'])[0]))
     await ctx.send(message)
+
+@bot.command()
+async def leaderboard(ctx):
+    full_pred_lb = pd.read_csv('data_wol/predictions.csv')
+    full_lb = full_pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
+    user_list = [x.split('#')[0] for x in list(full_lb['user'])]
+    layout = go.Layout(autosize=True, margin = {'l': 0, 'r': 0, 't': 0, 'b': 0} )
+    fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 20, 10],
+                                   header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=16),
+                                               height=25),
+                                   cells=dict(
+                                       values=[list(range(1, full_lb.shape[0] + 1)), user_list, list(full_lb['pts'])],
+                                       font=dict(color='black', size=14), height=25))
+                          ])
+    fig.update_layout(width=300, height=(25 * (full_lb.shape[0] + 1)))
+    fig.write_image("table.png")
+    await ctx.send(file=discord.File("table.png"))
 
 @bot.command()
 async def refresh(ctx):
