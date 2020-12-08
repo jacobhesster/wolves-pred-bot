@@ -4,7 +4,9 @@ import pandas as pd
 from numpy import nan
 import datetime as dt
 import plotly.graph_objects as go
-from wol_bot_static import token, teams, ha, pred_cols
+import tweepy
+from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_secret_apikey, \
+    twitter_access_token, twitter_secret_access_token
 
 # token - Discord bot token
 # teams - dictionary for converting team code to full team name
@@ -145,14 +147,14 @@ async def leaderboard(ctx):
     full_lb = full_pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
     user_list = [x.split('#')[0] for x in list(full_lb['user'])]
     layout = go.Layout(autosize=True, margin = {'l': 0, 'r': 0, 't': 0, 'b': 0} )
-    fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 20, 10],
+    fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 15, 10],
                                    header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=16),
-                                               height=25),
+                                               height=(484 / (full_lb.shape[0] + 1))),
                                    cells=dict(
                                        values=[list(range(1, full_lb.shape[0] + 1)), user_list, list(full_lb['pts'])],
-                                       font=dict(color='black', size=14), height=25))
+                                       font=dict(color='black', size=14), height= (484 / (full_lb.shape[0] + 1))))
                           ])
-    fig.update_layout(width=300, height=(25 * (full_lb.shape[0] + 1)))
+    fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
     fig.write_image("table.png")
     await ctx.send(file=discord.File("table.png"))
 
@@ -160,5 +162,59 @@ async def leaderboard(ctx):
 async def refresh(ctx):
     refresh_scores()
     await ctx.send('Scores have been updated.')
+
+@bot.command()
+async def tweet(ctx, *, tweet):
+    auth = tweepy.OAuthHandler(twitter_apikey, twitter_secret_apikey)
+    auth.set_access_token(twitter_access_token, twitter_secret_access_token)
+    api = tweepy.API(auth)
+    api.update_status(tweet)
+    await ctx.send('You tried to Tweet: {}'.format(tweet))
+
+@bot.command()
+async def tweethelp(ctx):
+    await ctx.send("Jeff Shi can tweet! Any message with three 💬 reactions will be tweeted to the Discord Twitter account "
+                   "(as long as mods permit). Messages with the 🔹 reaction have been sent. Check out the server Twitter page "
+                   "at https://twitter.com/WwfcDiscord")
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    print(reaction.message.content)
+    print(reaction.emoji)
+    channel_id = 346329500637855745
+    #channel_id = 557526209043628032
+    if reaction.message.channel.id != channel_id:
+        return
+
+    if reaction.emoji == "💬":
+        reaction_ct = reaction.message.reactions
+        tweet_go = 0
+        already_tweeted = 0
+        mod_denied = 0
+        print(reaction_ct)
+        for re in reaction_ct:
+            if re.emoji == "📵" and re.count > 0:
+                mod_denied = 1
+            if re.emoji == "🔹" and re.count > 0 and re.me:
+                already_tweeted = 1
+            if re.emoji == "💬" and re.count >= 3:
+                tweet_go = 1
+                print("tweet is a go")
+
+            if already_tweeted > 0:
+                print("already tweeted")
+                return
+            elif mod_denied > 0:
+                print("the mod denied your tweet")
+                return
+            elif tweet_go > 0:
+                auth = tweepy.OAuthHandler(twitter_apikey, twitter_secret_apikey)
+                auth.set_access_token(twitter_access_token, twitter_secret_access_token)
+                api = tweepy.API(auth)
+                api.update_status(reaction.message.content)
+                print("sent tweet")
+                await reaction.message.add_reaction("🔹")
+    return
+    #await reaction.message.channel.send(reaction.emoji)
 
 bot.run(token)
