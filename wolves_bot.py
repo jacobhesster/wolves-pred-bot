@@ -80,6 +80,14 @@ async def ping(ctx):
     await ctx.send(latency)
 
 @bot.command()
+async def neves(ctx):
+    await ctx.send("https://gfycat.com/unkemptsorefeline-wolverhampton-wanderers-fc-official-wolves")
+
+@bot.command()
+async def fifilza(ctx):
+    await ctx.send("https://giphy.com/gifs/fifa-esports-fifa19-fifaeworldcup-j44l37bp45nYTENNNF")
+
+@bot.command()
 async def score(ctx, game, score):
     results_score = pd.read_csv('data_wol/results.csv')
     pred_score = pd.read_csv('data_wol/predictions.csv')
@@ -111,7 +119,7 @@ async def score(ctx, game, score):
             pred_score = pred_score.append(pd.DataFrame([nrow], columns=pred_cols), ignore_index=True)
 
         pred_score.to_csv('data_wol/predictions.csv', index=False)
-        message = "Score recorded!"
+        message = "Score recorded! You predicted Wolves {}, {} {}.".format(score_parts[0], teams[game[:2]], score_parts[1])
     else:
         nexts = results_score[results_score['wolves'].isnull()]['game']
         next = nexts[min(nexts.index)]
@@ -148,11 +156,11 @@ async def leaderboard(ctx):
     user_list = [x.split('#')[0] for x in list(full_lb['user'])]
     layout = go.Layout(autosize=True, margin = {'l': 0, 'r': 0, 't': 0, 'b': 0} )
     fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 15, 10],
-                                   header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=16),
-                                               height=(484 / (full_lb.shape[0] + 1))),
+                                   header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=9),
+                                               height=(500 / (full_lb.shape[0] + 1))),
                                    cells=dict(
                                        values=[list(range(1, full_lb.shape[0] + 1)), user_list, list(full_lb['pts'])],
-                                       font=dict(color='black', size=14), height= (484 / (full_lb.shape[0] + 1))))
+                                       font=dict(color='black', size=9), height= (500 / (full_lb.shape[0] + 1))))
                           ])
     fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
     fig.write_image("table.png")
