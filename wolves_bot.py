@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import math
 import pandas as pd
 from numpy import nan
 import datetime as dt
@@ -7,6 +8,7 @@ import plotly.graph_objects as go
 import tweepy
 from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_secret_apikey, \
     twitter_access_token, twitter_secret_access_token
+import asyncio
 
 # token - Discord bot token
 # teams - dictionary for converting team code to full team name
@@ -154,17 +156,28 @@ async def leaderboard(ctx):
     full_pred_lb = pd.read_csv('data_wol/predictions.csv')
     full_lb = full_pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
     user_list = [x.split('#')[0] for x in list(full_lb['user'])]
-    layout = go.Layout(autosize=True, margin = {'l': 0, 'r': 0, 't': 0, 'b': 0} )
-    fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 15, 10],
-                                   header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=9),
-                                               height=(500 / (full_lb.shape[0] + 1))),
-                                   cells=dict(
-                                       values=[list(range(1, full_lb.shape[0] + 1)), user_list, list(full_lb['pts'])],
-                                       font=dict(color='black', size=9), height= (500 / (full_lb.shape[0] + 1))))
-                          ])
-    fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
-    fig.write_image("table.png")
-    await ctx.send(file=discord.File("table.png"))
+
+    files = []
+    for i in range(math.ceil(len(user_list) / 20)):
+        if i * 20 < len(user_list):
+            temp_full_lb = full_lb[(i * 20):((i + 1) * 20)]
+            temp_user_list = user_list[(i * 20):((i + 1) * 20)]
+        else:
+            temp_full_lb = full_lb[(i * 20):len(full_lb)]
+            temp_user_list = user_list[(i * 20):len(user_list)]
+        layout = go.Layout(autosize=True, margin = {'l': 0, 'r': 0, 't': 0, 'b': 0} )
+        fig = go.Figure(layout=layout, data=[go.Table(columnwidth=[10, 15, 10],
+                                       header=dict(values=['Rank', 'User', 'Points'], font=dict(color='black', size=12),
+                                                   height=(500 / (temp_full_lb.shape[0] + 1))),
+                                       cells=dict(
+                                           values=[list(range((i * 20) + 1, ((i + 1) * 20) + 1)), temp_user_list, list(temp_full_lb['pts'])],
+                                           font=dict(color='black', size=11), height= (500 / (temp_full_lb.shape[0] + 1))))
+                              ])
+        fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
+        fig.write_image("table{}.png".format(i))
+        files = files.append("table{}.png".format(i))
+
+    await asyncio.wait([ctx.send(file=discord.File(f)) for f in files])
 
 @bot.command()
 async def refresh(ctx):
