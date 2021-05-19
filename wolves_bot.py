@@ -121,7 +121,7 @@ async def score(ctx, game, score):
             pred_score = pred_score.append(pd.DataFrame([nrow], columns=pred_cols), ignore_index=True)
 
         pred_score.to_csv('data_wol/predictions.csv', index=False)
-        message = "Score recorded! You predicted Wolves {}, {} {}.".format(score_parts[0], teams[game[:2]], score_parts[1])
+        message = "Score recorded! You predicted Wolves {}, {} {}.".format(score_parts[0], teams[game[:-1]], score_parts[1])
     else:
         nexts = results_score[results_score['wolves'].isnull()]['game']
         next = nexts[min(nexts.index)]
@@ -158,6 +158,7 @@ async def leaderboard(ctx):
     user_list = [x.split('#')[0] for x in list(full_lb['user'])]
 
     files = []
+
     for i in range(math.ceil(len(user_list) / 20)):
         if i * 20 < len(user_list):
             temp_full_lb = full_lb[(i * 20):((i + 1) * 20)]
@@ -175,7 +176,7 @@ async def leaderboard(ctx):
                               ])
         fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
         fig.write_image("table{}.png".format(i))
-        files = files.append("table{}.png".format(i))
+        files.append("table{}.png".format(i))
 
     await asyncio.wait([ctx.send(file=discord.File(f)) for f in files])
 
