@@ -7,7 +7,7 @@ import datetime as dt
 import plotly.graph_objects as go
 import tweepy
 from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_secret_apikey, \
-    twitter_access_token, twitter_secret_access_token
+    twitter_access_token, twitter_secret_access_token, poll_channel
 import asyncio
 
 # token - Discord bot token
@@ -15,7 +15,7 @@ import asyncio
 # ha    - dictionary for converting h to home and a to away
 # pred_ - columns for prediction data
 
-#functions
+# prediction league functions
 def game_result(wolves, opp):
     if(wolves > opp):
         return "wolves"
@@ -66,6 +66,39 @@ def refresh_scores():
 
     pred.to_csv('data_wol/predictions.csv', index=False)
 
+# poll functions
+def get_poll_info(polls, code):
+    return polls[polls["code"] == code.lower()]
+
+def get_user_responses(responses, code, author):
+    return responses[(responses["user"] == str(author)) & (responses["code"] == code)]
+
+def get_poll_results(responses, polls, code):
+    poll = get_poll_info(polls, code)
+    poll_responses = responses[responses["code"] == code]["response"].value_counts(normalize=True)
+    msg = "Results:\n**{}**\n```".format(poll["poll"].iloc[0])
+    other = 0
+    for i in range(len(poll_responses)):
+        if i <= 4:
+            msg += "{:18.15}  {:.1f}%\n".format(poll_responses.index[i], poll_responses[i] * 100)
+        else:
+            other += poll_responses[i]
+    if other > 0:
+        msg += "{:18.15}  {:.1f}%```".format("other", other * 100)
+    else:
+        msg += "```"
+    return msg
+
+def add_polls_row(polls, code, poll, limit):
+    nr = pd.DataFrame({"code": code, "poll": poll, "vote_limit": limit, "open": 1}, index=[0])
+    pd.concat([nr, polls]).reset_index(drop=True).to_csv('data_wol/polls.csv', index=False)
+
+def add_responses_row(responses, code, response, author):
+    nr = pd.DataFrame({"code": code, "response": response, "user": author}, index=[0])
+    pd.concat([nr, responses]).reset_index(drop=True).to_csv("data_wol/poll_responses.csv", index=False)
+
+def poll_code_exists(polls, code):
+    return code in polls['code'].unique()
 
 #refresh scores on startup
 refresh_scores()
@@ -88,6 +121,8 @@ async def neves(ctx):
 @bot.command()
 async def fifilza(ctx):
     await ctx.send("https://giphy.com/gifs/fifa-esports-fifa19-fifaeworldcup-j44l37bp45nYTENNNF")
+
+# prediction table commands
 
 @bot.command()
 async def score(ctx, game, score):
@@ -185,6 +220,8 @@ async def refresh(ctx):
     refresh_scores()
     await ctx.send('Scores have been updated.')
 
+# tweet commands
+
 @bot.command()
 async def tweet(ctx, *, tweet):
     auth = tweepy.OAuthHandler(twitter_apikey, twitter_secret_apikey)
@@ -238,5 +275,106 @@ async def on_reaction_add(reaction, user):
                 await reaction.message.add_reaction("🔹")
     return
     #await reaction.message.channel.send(reaction.emoji)
+
+# poll commands
+
+@bot.command()
+async def addpoll(ctx, code, limit, *poll_args):
+    poll = ' '.join(poll_args)
+    polls = pd.read_csv('data_wol/polls.csv')
+
+    if poll_code_exists(polls, code):
+        msg = "Code '{}' already exists. Try a new code.".format(code)
+    else:
+        add_polls_row(polls, code, poll, limit)
+        await bot.get_channel(poll_channel).send("New poll added:\n**{}**\nCode: **{}**\nResponse limit: **{}**\nRespond with command '$vote {} *RESPONSE*'".format(poll, code, limit, code))
+        msg = "Poll added with code {}. Response limited to {} per user.".format(code, limit)
+    await ctx.send(msg)
+
+@bot.command()
+async def closepoll(ctx, code, delete):
+    polls = pd.read_csv('data_wol/polls.csv')
+    responses = pd.read_csv("data_wol/poll_responses.csv")
+
+    if delete.lower() == "del":
+        polls[polls['code'] != code.lower()].to_csv('data_wol/polls.csv', index=False)
+        msg = "Poll with code {} removed.".format(code)
+
+    elif delete.lower() == "clo":
+        pl_ind = polls.index[polls["code"] == code.lower()].tolist()
+        if len(pl_ind) > 0:
+            polls.at[pl_ind[0], "open"] = 0
+            polls.to_csv('data_wol/polls.csv', index=False)
+            close_msg = "Poll closed:\n**{}**\nCode: **{}**".format(polls.at[pl_ind[0], "poll"], code)
+            results_msg = get_poll_results(responses, polls, code)
+            await bot.get_channel(poll_channel).send(close_msg)
+            await bot.get_channel(poll_channel).send(results_msg)
+            msg = "Poll with code {} closed.".format(code)
+        else:
+            msg = "Poll with code {} does not exist.".format(code)
+    else:
+        msg = "Wrong code. Please use 'del' to delete poll or 'clo' to close poll."
+    await ctx.send(msg)
+
+@bot.command()
+async def vote(ctx, code, *response_args):
+    response = ' '.join(response_args)
+    responses = pd.read_csv("data_wol/poll_responses.csv")
+
+    poll_limit = get_poll_info(code)["vote_limit"].to_list()
+    if len(poll_limit) > 0:
+        prev_response = get_user_responses(responses, code, ctx.author)
+        if prev_response.shape[0] >= poll_limit[0]:
+            msg = "You already voted {} time(s). Your vote(s):\n".format(prev_response.shape[0])
+            for resp in prev_response["response"].to_list():
+                msg += resp + ", "
+            msg = msg[:-2] + "\nTo change vote, use command '$cvote *CODE* *RESPONSE*'."
+        else:
+            add_responses_row(responses, code, response, ctx.author)
+            msg = "You voted for {}.".format(response)
+    else:
+        msg = "Code {} does not exist. Try *$openpolls* to check open polls.".format(code)
+
+    await ctx.send(msg)
+
+@bot.command()
+async def getvote(ctx, code):
+    responses = pd.read_csv("data_wol/poll_responses.csv")
+
+    prev_response = get_user_responses(responses, code, ctx.author)
+    msg = "Your vote(s):\n"
+    for resp in prev_response["response"].to_list():
+        msg += resp + ", "
+
+    await ctx.send(msg[:-2] + "\nTo change vote, use command '$cvote *CODE* *RESPONSE*'.")
+
+@bot.command()
+async def cvote(ctx, code, *response_args):
+    response = ' '.join(response_args)
+    responses = pd.read_csv("data_wol/poll_responses.csv")
+    polls = pd.read_csv("data_wol/polls.csv")
+
+    prev_response = get_user_responses(responses, code, ctx.author)
+    if prev_response.shape[0] == 0:
+        msg = "You have not voted for this poll yet or poll {} does not exist.".format(code)
+    else:
+        pr = prev_response.iloc[-1]["response"]
+        nr = pd.DataFrame({"code": code, "response": response, "user": ctx.author}, index=[0])
+        pd.concat([nr, responses.drop(prev_response.iloc[-1].name)]).reset_index(drop=True).to_csv("data_wol/poll_responses.csv", index=False)
+        msg = "You replaced '{}' with '{}'.".format(pr, response)
+
+    await ctx.send(msg)
+
+@bot.command()
+async def results(ctx, code):
+    responses = pd.read_csv("data_wol/poll_responses.csv")
+    polls = pd.read_csv("data_wol/polls.csv")
+
+    if poll_code_exists(polls, code):
+        msg = get_poll_results(responses, polls, code)
+    else:
+        msg = "Poll with code {} does not exist.".format(code)
+
+    await ctx.send(msg)
 
 bot.run(token)

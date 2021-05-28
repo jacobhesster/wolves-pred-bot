@@ -1,25 +1,733 @@
 user,game,opp_score,wolves,pts
-jacobhess#8353,mch,1,2,0.0
-julio#6286,mch,0,0,0.0
-ALECgator13#4240,mch,2,2,0.0
-UntouchedCow#6209,mch,0,1,1.0
-TurboTaco#8003,mch,1,1,1.0
-jkling38#3689,mch,0,2,0.0
-Podence Is Free#7562,mch,1,2,0.0
-Zisko#7542,mch,2,3,0.0
-Rye#8602,mch,1,1,1.0
-gigaSproule#4905,mch,0,3,0.0
-Raymont#5741,mch,1,1,1.0
-Spartacus Mills#4745,mch,2,0,2.0
-jacobhess#8353,wha,0,3,
-TurboTaco#8003,wha,1,4,
-UntouchedCow#6209,wha,0,5,
-It'sRex#7264,wha,0,3,
-Raymont#5741,wha,1,2,
-gigaSproule#4905,wha,1,3,
-mjc1232#1893,wha,0,2,
-Spartacus Mills#4745,wha,0,2,
-SeibaBeams#5955,wha,0,3,
-julio#6286,wha,1,2,
-Tr4pD00r#5658,wha,0,2,
-ALECgator13#4240,wha,1,2,
+jacobhess#8353,mch,1,2.0,0
+julio#6286,mch,0,0.0,0
+ALECgator13#4240,mch,2,2.0,0
+UntouchedCow#6209,mch,0,1.0,1
+TurboTaco#8003,mch,1,1.0,1
+jkling38#3689,mch,0,2.0,0
+Dangy98#7562,mch,1,2.0,0
+Zisko#7542,mch,2,3.0,0
+Rye#8602,mch,1,1.0,1
+gigaSproule#4905,mch,0,3.0,0
+Raymont#5741,mch,1,1.0,1
+Spartacus Mills#4745,mch,2,0.0,2
+jacobhess#8353,wha,0,3.0,0
+TurboTaco#8003,wha,1,4.0,0
+UntouchedCow#6209,wha,0,5.0,0
+It'sRex#7264,wha,0,3.0,0
+Raymont#5741,wha,1,2.0,0
+gigaSproule#4905,wha,1,3.0,0
+mjc1232#1893,wha,0,2.0,0
+Spartacus Mills#4745,wha,0,2.0,0
+Mr Kitty#0668,wha,0,3.0,0
+julio#6286,wha,1,2.0,0
+Tr4pD00r#5658,wha,0,2.0,0
+ALECgator13#4240,wha,1,2.0,0
+Zisko#7542,wha,1,4.0,0
+Adam.Acres#2706,wha,0,3.0,0
+TurboTaco#8003,fuh,4,0.0,0
+Dangy98#7562,fuh,1,2.0,2
+Tr4pD00r#5658,fuh,1,1.0,1
+UntouchedCow#6209,fuh,2,3.0,2
+gigaSproule#4905,fuh,1,2.0,2
+ALECgator13#4240,fuh,1,3.0,2
+julio#6286,fuh,0,2.0,3
+Raymont#5741,fuh,1,1.0,1
+It'sRex#7264,fuh,1,1.0,1
+jacobhess#8353,fuh,2,3.0,2
+jkling38#3689,fuh,2,2.0,0
+Mr Kitty#0668,fuh,1,3.0,2
+eekaner#4689,fuh,0,4.0,3
+Rye#8602,fuh,1,2.0,2
+Spartacus Mills#4745,fuh,0,1.0,4
+jacobhess#8353,lua,1,2.0,2
+Tr4pD00r#5658,lua,1,0.0,0
+TurboTaco#8003,lua,3,0.0,0
+Rye#8602,lua,1,1.0,1
+Dangy98#7562,lua,0,1.0,4
+julio#6286,lua,2,1.0,1
+UntouchedCow#6209,lua,2,2.0,0
+gigaSproule#4905,lua,3,0.0,0
+It'sRex#7264,lua,0,2.0,3
+Raymont#5741,lua,1,2.0,2
+ALECgator13#4240,lua,0,0.0,1
+Spartacus Mills#4745,lua,2,0.0,0
+Zisko#7542,lua,0,1.0,4
+Mr Kitty#0668,lua,3,2.0,0
+eekaner#4689,lua,2,3.0,2
+TurboTaco#8003,neh,1,1.0,4
+UntouchedCow#6209,neh,0,3.0,0
+Spartacus Mills#4745,neh,1,2.0,1
+Tr4pD00r#5658,neh,0,1.0,1
+gigaSproule#4905,neh,0,1.0,1
+Zisko#7542,neh,1,3.0,1
+jacobhess#8353,neh,0,2.0,0
+Dangy98#7562,neh,0,2.0,0
+julio#6286,neh,0,1.0,1
+It'sRex#7264,neh,0,1.0,1
+Raymont#5741,neh,1,2.0,1
+Mr Kitty#0668,neh,0,2.0,0
+Rye#8602,neh,0,2.0,0
+ALECgator13#4240,neh,1,2.0,1
+Koke#2176,neh,1,2.0,1
+.SOUR.#1337,neh,0,1.0,1
+jacobhess#8353,cph,1,1.0,0
+Tr4pD00r#5658,cph,1,2.0,3
+TurboTaco#8003,cph,0,0.0,1
+gigaSproule#4905,cph,1,2.0,3
+UntouchedCow#6209,cph,1,1.0,0
+Spartacus Mills#4745,cph,1,1.0,0
+It'sRex#7264,cph,0,0.0,1
+julio#6286,cph,0,1.0,3
+Rye#8602,cph,0,1.0,3
+Raymont#5741,cph,1,2.0,3
+.SOUR.#1337,cph,1,2.0,3
+Zisko#7542,cph,1,2.0,3
+Dangy98#7562,cph,0,2.0,4
+Koke#2176,cph,1,2.0,3
+ALECgator13#4240,cph,1,1.0,0
+jacobhess#8353,lca,2,2.0,0
+julio#6286,lca,0,1.0,0
+UntouchedCow#6209,lca,2,1.0,2
+Tr4pD00r#5658,lca,0,0.0,1
+Dangy98#7562,lca,1,2.0,1
+It'sRex#7264,lca,0,1.0,0
+Spartacus Mills#4745,lca,0,1.0,0
+ALECgator13#4240,lca,3,2.0,2
+TurboTaco#8003,lca,3,3.0,0
+gigaSproule#4905,lca,2,1.0,2
+Zisko#7542,lca,2,3.0,0
+Smitty#2403,lca,2,2.0,0
+Rye#8602,lca,1,1.0,1
+Koke#2176,lca,2,3.0,0
+Dangy98#7562,lca,1,2.0,1
+Raymont#5741,lca,1,2.0,1
+Mr Kitty#0668,lca,1,2.0,1
+jacobhess#8353,soh,0,1.0,1
+UntouchedCow#6209,soh,2,0.0,0
+Spartacus Mills#4745,soh,0,2.0,0
+julio#6286,soh,0,1.0,1
+Tr4pD00r#5658,soh,0,1.0,1
+It'sRex#7264,soh,1,2.0,1
+Smitty#2403,soh,1,2.0,1
+gigaSproule#4905,soh,0,2.0,0
+TurboTaco#8003,soh,2,1.0,1
+ALECgator13#4240,soh,2,1.0,1
+Rye#8602,soh,1,1.0,4
+Zisko#7542,soh,1,2.0,1
+Barrels#3744,soh,1,1.0,4
+Dangy98#7562,soh,1,2.0,1
+Raymont#5741,soh,0,2.0,0
+.SOUR.#1337,soh,1,1.0,4
+jacobhess#8353,ara,0,2.0,3
+julio#6286,ara,0,1.0,2
+Koke#2176,ara,3,2.0,1
+TurboTaco#8003,ara,0,2.0,3
+ALECgator13#4240,ara,1,2.0,4
+Tr4pD00r#5658,ara,1,0.0,1
+Zisko#7542,ara,1,2.0,4
+It'sRex#7264,ara,2,0.0,0
+Smitty#2403,ara,1,1.0,1
+Rye#8602,ara,0,1.0,2
+Raymont#5741,ara,1,2.0,4
+UntouchedCow#6209,ara,1,0.0,1
+gigaSproule#4905,ara,2,0.0,0
+Mr Kitty#0668,ara,1,1.0,1
+Spartacus Mills#4745,ara,2,0.0,0
+.SOUR.#1337,ara,0,1.0,2
+Barrels#3744,ara,0,4.0,2
+Dangy98#7562,ara,1,2.0,4
+jacobhess#8353,lia,2,1.0,2
+UntouchedCow#6209,lia,0,1.0,0
+Dangy98#7562,lia,1,1.0,0
+Tr4pD00r#5658,lia,1,0.0,3
+Koke#2176,lia,1,1.0,0
+ALECgator13#4240,lia,2,1.0,2
+julio#6286,lia,0,1.0,0
+Smitty#2403,lia,2,1.0,2
+TurboTaco#8003,lia,2,1.0,2
+Rye#8602,lia,1,0.0,3
+gigaSproule#4905,lia,2,0.0,3
+Spartacus Mills#4745,lia,1,2.0,0
+Raymont#5741,lia,1,1.0,0
+Mr Kitty#0668,lia,1,2.0,0
+.SOUR.#1337,lia,1,2.0,0
+Zisko#7542,lia,2,2.0,0
+It'sRex#7264,lia,1,0.0,3
+Barrels#3744,lia,3,1.0,2
+jacobhess#8353,avh,2,3.0,0
+UntouchedCow#6209,avh,2,1.0,2
+It'sRex#7264,avh,2,0.0,3
+TurboTaco#8003,avh,0,0.0,1
+Zisko#7542,avh,1,2.0,1
+Barrels#3744,avh,0,1.0,0
+julio#6286,avh,0,1.0,0
+Dangy98#7562,avh,1,2.0,1
+Tr4pD00r#5658,avh,0,1.0,0
+Smitty#2403,avh,1,2.0,1
+Rye#8602,avh,0,1.0,0
+ALECgator13#4240,avh,2,1.0,2
+Raymont#5741,avh,0,2.0,0
+eekaner#4689,avh,1,2.0,1
+Mr Kitty#0668,avh,1,2.0,1
+jacobhess#8353,chh,2,0.0,0
+UntouchedCow#6209,chh,4,0.0,0
+Tr4pD00r#5658,chh,3,0.0,0
+Raymont#5741,chh,2,0.0,0
+Zisko#7542,chh,1,2.0,4
+ALECgator13#4240,chh,2,1.0,0
+TurboTaco#8003,chh,4,0.0,0
+julio#6286,chh,3,0.0,0
+Koke#2176,chh,1,1.0,1
+Dangy98#7562,chh,2,0.0,0
+It'sRex#7264,chh,3,0.0,0
+gigaSproule#4905,chh,1,0.0,1
+Smitty#2403,chh,3,1.0,0
+Mr Kitty#0668,chh,1,1.0,1
+Spartacus Mills#4745,chh,1,2.0,4
+Rye#8602,chh,2,0.0,0
+.SOUR.#1337,chh,1,2.0,4
+Barrels#3744,chh,1,0.0,1
+Koke#2176,bua,1,3.0,0
+jacobhess#8353,bua,0,1.0,1
+julio#6286,bua,0,1.0,1
+Barrels#3744,bua,0,4.0,0
+Tr4pD00r#5658,bua,0,2.0,0
+Dangy98#7562,bua,0,2.0,0
+.SOUR.#1337,bua,0,1.0,1
+TurboTaco#8003,bua,1,0.0,2
+UntouchedCow#6209,bua,0,1.0,1
+gigaSproule#4905,bua,0,2.0,0
+Zisko#7542,bua,0,2.0,0
+Mr Kitty#0668,bua,1,2.0,0
+It'sRex#7264,bua,1,1.0,1
+Smitty#2403,bua,0,1.0,1
+ALECgator13#4240,bua,1,2.0,0
+Raymont#5741,bua,1,2.0,0
+Rye#8602,bua,1,2.0,0
+mjc1232#1893,bua,0,1.0,1
+eekaner#4689,bua,1,3.0,0
+jacobhess#8353,toh,1,2.0,1
+Koke#2176,toh,2,2.0,2
+TurboTaco#8003,toh,3,0.0,0
+UntouchedCow#6209,toh,6,0.0,0
+Tr4pD00r#5658,toh,4,0.0,0
+julio#6286,toh,0,1.0,1
+Smitty#2403,toh,3,1.0,1
+Spartacus Mills#4745,toh,1,3.0,1
+Jay2Certi#6929,toh,1,2.0,1
+gigaSproule#4905,toh,3,0.0,0
+Raymont#5741,toh,2,1.0,1
+Dangy98#7562,toh,2,1.0,1
+Barrels#3744,toh,1,2.0,1
+Zisko#7542,toh,2,1.0,1
+Rye#8602,toh,2,1.0,1
+.SOUR.#1337,toh,2,2.0,2
+jacobhess#8353,mua,1,2.0,1
+Tr4pD00r#5658,mua,2,1.0,2
+UntouchedCow#6209,mua,2,0.0,3
+Koke#2176,mua,1,1.0,1
+TurboTaco#8003,mua,3,3.0,0
+gigaSproule#4905,mua,2,1.0,2
+Smitty#2403,mua,2,1.0,2
+julio#6286,mua,0,1.0,0
+Jay2Certi#6929,mua,2,1.0,2
+ALECgator13#4240,mua,2,1.0,2
+Zisko#7542,mua,2,1.0,2
+Rye#8602,mua,1,1.0,1
+Dangy98#7562,mua,1,2.0,1
+Raymont#5741,mua,2,1.0,2
+It'sRex#7264,mua,1,0.0,4
+jacobhess#8353,bra,0,1.0,0
+UntouchedCow#6209,bra,1,2.0,0
+Zisko#7542,bra,0,2.0,0
+Koke#2176,bra,1,2.0,0
+Tr4pD00r#5658,bra,0,1.0,0
+Barrels#3744,bra,1,2.0,0
+Smitty#2403,bra,0,1.0,0
+julio#6286,bra,0,1.0,0
+gigaSproule#4905,bra,0,2.0,0
+Rye#8602,bra,0,1.0,0
+TurboTaco#8003,bra,2,0.0,0
+Mr Kitty#0668,bra,1,3.0,1
+Dangy98#7562,bra,0,1.0,0
+ALECgator13#4240,bra,0,2.0,0
+Spartacus Mills#4745,bra,1,0.0,0
+Oberyn Martell#0164,bra,2,0.0,0
+eekaner#4689,bra,1,0.0,0
+Raymont#5741,bra,0,2.0,0
+Jobbiis#8938,bra,0,3.0,1
+Koke#2176,evh,1,2.0,0
+jacobhess#8353,evh,0,1.0,1
+Tr4pD00r#5658,evh,1,0.0,2
+gigaSproule#4905,evh,3,1.0,3
+UntouchedCow#6209,evh,2,0.0,3
+TurboTaco#8003,evh,1,0.0,2
+Dangy98#7562,evh,0,1.0,1
+ALECgator13#4240,evh,2,1.0,4
+Raymont#5741,evh,0,1.0,1
+It'sRex#7264,evh,3,1.0,3
+julio#6286,evh,0,1.0,1
+Barrels#3744,evh,0,1.0,1
+Zisko#7542,evh,1,2.0,0
+Mr Kitty#0668,evh,1,2.0,0
+Rye#8602,evh,2,1.0,4
+Smitty#2403,evh,2,2.0,1
+Oni111#0111,evh,2,3.0,1
+AmaraBoss01#3199,evh,0,1.0,1
+Jacob Cooper#3738,evh,2,1.0,4
+Jobbiis#8938,evh,1,2.0,0
+jacobhess#8353,shith,0,2.0,1
+Koke#2176,shith,0,2.0,1
+Tr4pD00r#5658,shith,0,5.0,0
+UntouchedCow#6209,shith,0,1.0,0
+TurboTaco#8003,shith,2,0.0,2
+ALECgator13#4240,shith,1,1.0,0
+It'sRex#7264,shith,0,2.0,1
+gigaSproule#4905,shith,1,2.0,1
+julio#6286,shith,0,1.0,0
+Barrels#3744,shith,0,3.0,0
+Zisko#7542,shith,1,2.0,1
+WolvesToTheUcl#1140,shith,0,1.0,0
+AmaraBoss01#3199,shith,1,2.0,1
+Smitty#2403,shith,1,2.0,1
+Raymont#5741,shith,0,1.0,0
+Rye#8602,shith,1,2.0,1
+Oni111#0111,shith,0,2.0,1
+eekaner#4689,shith,1,3.0,0
+Mr Kitty#0668,shith,2,7.0,0
+Jobbiis#8938,shith,0,3.0,0
+jacobhess#8353,cha,1,2.0,0
+gigaSproule#4905,cha,3,1.0,0
+WolvesToTheUcl#1140,cha,1,1.0,2
+UntouchedCow#6209,cha,3,0.0,1
+Raymont#5741,cha,0,0.0,4
+julio#6286,cha,1,0.0,1
+Tr4pD00r#5658,cha,2,0.0,1
+TurboTaco#8003,cha,5,0.0,1
+Koke#2176,cha,2,1.0,0
+It'sRex#7264,cha,2,1.0,0
+Zisko#7542,cha,2,1.0,0
+Oni111#0111,cha,4,1.0,0
+AmaraBoss01#3199,cha,2,3.0,0
+Jacob Cooper#3738,cha,3,1.0,0
+Smitty#2403,cha,3,1.0,0
+Rye#8602,cha,2,1.0,0
+Jobbiis#8938,cha,0,4.0,1
+Barrels#3744,cha,0,2.0,1
+ALECgator13#4240,cha,2,1.0,0
+eekaner#4689,cha,2,2.0,2
+Mr Kitty#0668,cha,1,1.0,2
+jacobhess#8353,cpa,0,1.0,0
+Oni111#0111,cpa,1,2.0,1
+TurboTaco#8003,cpa,0,1.0,0
+Koke#2176,cpa,0,1.0,0
+Smitty#2403,cpa,0,2.0,0
+ALECgator13#4240,cpa,2,1.0,2
+julio#6286,cpa,0,1.0,0
+WolvesToTheUcl#1140,cpa,1,1.0,1
+UntouchedCow#6209,cpa,0,2.0,0
+It'sRex#7264,cpa,0,1.0,0
+Jacob Cooper#3738,cpa,1,1.0,1
+gigaSproule#4905,cpa,1,1.0,1
+Raymont#5741,cpa,0,1.0,0
+Zisko#7542,cpa,0,1.0,0
+Barrels#3744,cpa,0,2.0,0
+Jobbiis#8938,cpa,0,2.0,0
+Mr Kitty#0668,cpa,1,2.0,1
+jacobhess#8353,arh,2,0.0,0
+TurboTaco#8003,arh,1,0.0,1
+Oni111#0111,arh,2,1.0,0
+julio#6286,arh,0,1.0,2
+It'sRex#7264,arh,1,0.0,1
+Raymont#5741,arh,2,1.0,0
+WolvesToTheUcl#1140,arh,1,1.0,1
+Smitty#2403,arh,2,1.0,0
+Koke#2176,arh,1,1.0,1
+Tr4pD00r#5658,arh,0,0.0,0
+Mr Kitty#0668,arh,0,1.0,2
+ALECgator13#4240,arh,2,1.0,0
+Barrels#3744,arh,0,1.0,2
+Zisko#7542,arh,2,1.0,0
+UntouchedCow#6209,arh,2,0.0,0
+Rye#8602,arh,1,1.0,1
+Jacob Cooper#3738,arh,2,1.0,0
+gigaSproule#4905,arh,2,0.0,0
+Jobbiis#8938,arh,1,1.0,1
+eekaner#4689,arh,2,2.0,1
+V9#5072,arh,2,3.0,2
+Spartacus Mills#4745,arh,1,2.0,4
+Dangy98#7562,arh,1,2.0,4
+jacobhess#8353,leh,0,1.0,1
+Oni111#0111,leh,2,2.0,2
+Koke#2176,leh,1,1.0,2
+ALECgator13#4240,leh,2,1.0,0
+It'sRex#7264,leh,2,1.0,0
+julio#6286,leh,0,1.0,1
+WolvesToTheUcl#1140,leh,1,0.0,1
+Tr4pD00r#5658,leh,2,0.0,1
+Smitty#2403,leh,2,1.0,0
+Barrels#3744,leh,1,2.0,0
+Dangy98#7562,leh,1,2.0,0
+UntouchedCow#6209,leh,1,0.0,1
+TurboTaco#8003,leh,3,1.0,0
+Clinical Coady#6929,leh,3,1.0,0
+Jayden?#4200,leh,2,1.0,0
+Raymont#5741,leh,2,2.0,2
+V9#5072,leh,0,0.0,4
+gigaSproule#4905,leh,2,1.0,0
+Zisko#7542,leh,2,1.0,0
+Rye#8602,leh,2,1.0,0
+Mr Kitty#0668,leh,1,2.0,0
+Jobbiis#8938,leh,0,2.0,1
+Jacob Cooper#3738,leh,2,1.0,0
+jacobhess#8353,soa,0,1.0,2
+UntouchedCow#6209,soa,0,3.0,2
+Dangy98#7562,soa,1,2.0,4
+Clinical Coady#6929,soa,1,1.0,1
+Tr4pD00r#5658,soa,0,2.0,3
+WolvesToTheUcl#1140,soa,2,0.0,0
+Jayden?#4200,soa,1,1.0,1
+V9#5072,soa,1,2.0,4
+Koke#2176,soa,1,1.0,1
+TurboTaco#8003,soa,1,1.0,1
+julio#6286,soa,0,1.0,2
+Barrels#3744,soa,0,0.0,0
+Oni111#0111,soa,1,2.0,4
+Smitty#2403,soa,2,0.0,0
+ALECgator13#4240,soa,2,1.0,0
+It'sRex#7264,soa,2,0.0,0
+Rye#8602,soa,1,2.0,4
+Raymont#5741,soa,0,2.0,3
+gigaSproule#4905,soa,2,1.0,0
+Zisko#7542,soa,1,1.0,1
+Mr Kitty#0668,soa,1,2.0,4
+Jobbiis#8938,soa,0,1.0,2
+jacobhess#8353,luh,2,0.0,0
+It'sRex#7264,luh,0,1.0,4
+Barrels#3744,luh,0,3.0,3
+julio#6286,luh,0,1.0,4
+Smitty#2403,luh,1,1.0,1
+Tr4pD00r#5658,luh,0,1.0,4
+Koke#2176,luh,1,2.0,2
+UntouchedCow#6209,luh,3,4.0,2
+YorkshirePilot#0393,luh,0,1.0,4
+Clinical Coady#6929,luh,1,1.0,1
+Dangy98#7562,luh,0,2.0,3
+Oni111#0111,luh,1,2.0,2
+ALECgator13#4240,luh,2,1.0,1
+Jacob Cooper#3738,luh,0,2.0,3
+Jayden?#4200,luh,1,2.0,2
+TurboTaco#8003,luh,4,1.0,1
+Zisko#7542,luh,2,3.0,2
+Raymont#5741,luh,2,2.0,0
+Rye#8602,luh,1,1.0,1
+Mr Kitty#0668,luh,1,2.0,2
+.SOUR.#1337,luh,1,2.0,2
+WolvesToTheUcl#1140,luh,2,2.0,0
+Jobbiis#8938,luh,2,2.0,0
+V9#5072,luh,1,2.0,2
+Tr4pD00r#5658,nea,0,1.0,1
+julio#6286,nea,0,1.0,1
+jacobhess#8353,nea,1,2.0,1
+Dangy98#7562,nea,0,2.0,0
+Koke#2176,nea,0,2.0,0
+Clinical Coady#6929,nea,1,0.0,1
+Smitty#2403,nea,1,2.0,1
+Jayden?#4200,nea,0,1.0,1
+UntouchedCow#6209,nea,1,1.0,4
+It'sRex#7264,nea,1,1.0,4
+Barrels#3744,nea,1,2.0,1
+Oni111#0111,nea,0,2.0,0
+Raymont#5741,nea,1,1.0,4
+TurboTaco#8003,nea,1,1.0,4
+Zisko#7542,nea,1,2.0,1
+✨𝓉𝒽𝒶𝓉𝓀𝒾𝒹𝒿𝑜𝓈𝒽✨#7106,nea,0,1.0,1
+gigaSproule#4905,nea,0,2.0,0
+WolvesToTheUcl#1140,nea,0,3.0,0
+ALECgator13#4240,nea,1,2.0,1
+Clinical Coady#6929,nea,0,1.0,1
+Rye#8602,nea,1,2.0,1
+Mr Kitty#0668,nea,0,2.0,0
+Neto is da Goat#0645,nea,0,1.0,1
+Swag Monke#8817,nea,1,1.0,4
+YorkshirePilot#0393,nea,0,2.0,0
+V9#5072,nea,1,2.0,1
+.SOUR.#1337,nea,0,1.0,1
+Jobbiis#8938,nea,0,2.0,0
+Zisko#7542,mca,3,1.0,3
+🖤 𝖏𝖔𝖘𝖍 🖤#7106,mca,3,0.0,2
+Clinical Coady#6929,mca,3,0.0,2
+Tr4pD00r#5658,mca,4,1.0,4
+UntouchedCow#6209,mca,1,2.0,0
+jacobhess#8353,mca,2,0.0,2
+Dangy98#7562,mca,3,4.0,0
+gigaSproule#4905,mca,3,0.0,2
+Neto is da Goat#0645,mca,2,0.0,2
+WolvesToTheUcl#1140,mca,5,0.0,2
+TurboTaco#8003,mca,3,0.0,2
+Broskito 2#8533,mca,3,0.0,2
+Smitty#2403,mca,3,0.0,2
+It'sRex#7264,mca,2,0.0,2
+ALECgator13#4240,mca,2,1.0,3
+Oni111#0111,mca,2,3.0,0
+Raymont#5741,mca,1,1.0,1
+julio#6286,mca,2,1.0,3
+ToxicSZN#9802,mca,2,0.0,2
+Elokobi#8077,mca,3,0.0,2
+Rye#8602,mca,2,0.0,2
+Swag Monke#8817,mca,0,1.0,1
+bcavs#3559,mca,1,1.0,1
+Mr Kitty#0668,mca,1,1.0,1
+.SOUR.#1337,mca,4,1.0,4
+Spartacus Mills#4745,mca,1,2.0,0
+Jobbiis#8938,mca,2,2.0,0
+jacobhess#8353,ava,0,1.0,1
+TurboTaco#8003,ava,3,1.0,0
+🖤 𝖏𝖔𝖘𝖍 🖤#7106,ava,0,2.0,1
+Oni111#0111,ava,1,2.0,0
+gigaSproule#4905,ava,2,1.0,0
+UntouchedCow#6209,ava,1,0.0,1
+Koke#2176,ava,0,1.0,1
+Tr4pD00r#5658,ava,2,1.0,0
+It'sRex#7264,ava,1,1.0,2
+Barrels#3744,ava,0,8.0,1
+Clinical Coady#6929,ava,1,2.0,0
+Elokobi#8077,ava,1,0.0,1
+.SOUR.#1337,ava,0,1.0,1
+julio#6286,ava,0,1.0,1
+Smitty#2403,ava,1,1.0,2
+ALECgator13#4240,ava,2,1.0,0
+WolvesToTheUcl#1140,ava,0,0.0,4
+Rye#8602,ava,1,1.0,2
+Zisko#7542,ava,1,2.0,0
+Raymont#5741,ava,0,2.0,1
+Dangy98#7562,ava,0,2.0,1
+V9#5072,ava,0,1.0,1
+Smitty#2403,ava,1,2.0,0
+UntouchedCow#6209,lih,2,0.0,3
+Josh 🖤#7106,lih,0,2.0,0
+jacobhess#8353,lih,2,1.0,2
+Barrels#3744,lih,2,0.0,3
+Clinical Coady#6929,lih,2,0.0,3
+Smitty#2403,lih,1,1.0,1
+Tr4pD00r#5658,lih,0,1.0,0
+It'sRex#7264,lih,1,0.0,4
+julio#6286,lih,1,0.0,4
+gigaSproule#4905,lih,1,2.0,1
+Oni111#0111,lih,2,1.0,2
+Mr Kitty#0668,lih,2,1.0,2
+WolvesToTheUcl#1140,lih,2,1.0,2
+Koke#2176,lih,0,1.0,0
+ALECgator13#4240,lih,2,1.0,2
+21Cabbage#8817,lih,3,0.0,3
+.SOUR.#1337,lih,0,1.0,0
+Raymont#5741,lih,2,2.0,0
+Rye#8602,lih,2,1.0,2
+Zisko#7542,lih,2,1.0,2
+Dangy98#7562,lih,1,2.0,1
+TurboTaco#8003,lih,1,0.0,4
+Spartacus Mills#4745,lih,1,2.0,1
+Jobbiis#8938,lih,0,2.0,0
+Jayden!#6969,lih,1,2.0,1
+eekaner#4689,lih,0,2.0,0
+jacobhess#8353,whh,0,1.0,0
+It'sRex#7264,whh,1,1.0,0
+Clinical Coady#6929,whh,1,1.0,0
+TurboTaco#8003,whh,3,0.0,3
+julio#6286,whh,1,0.0,2
+Oni111#0111,whh,1,2.0,1
+gigaSproule#4905,whh,0,0.0,0
+Barrels#3744,whh,1,3.0,0
+Koke#2176,whh,2,1.0,2
+UntouchedCow#6209,whh,2,0.0,2
+WolvesToTheUcl#1140,whh,1,1.0,0
+ALECgator13#4240,whh,2,1.0,2
+Josh 🖤#7106,whh,0,1.0,0
+Spartacus Mills#4745,whh,3,0.0,3
+Hayden#5220,whh,1,2.0,1
+axel_hu28#9078,whh,1,1.0,0
+Zisko#7542,whh,1,2.0,1
+Chicks#2625,whh,1,1.0,0
+Smitty#2403,whh,1,1.0,0
+Mr Kitty#0668,whh,2,1.0,2
+Rye#8602,whh,1,1.0,0
+Dangy98#7562,whh,1,2.0,1
+eekaner#4689,whh,0,1.0,0
+Jobbiis#8938,whh,1,3.0,0
+jacobhess#8353,fua,1,3.0,2
+Clinical Coady#6929,fua,2,1.0,1
+Dangy98#7562,fua,1,2.0,2
+WolvesToTheUcl#1140,fua,1,0.0,0
+Hayden#5220,fua,1,2.0,2
+ReluctantGoalkeeper#3761,fua,1,3.0,2
+UntouchedCow#6209,fua,0,1.0,4
+It'sRex#7264,fua,0,1.0,4
+Tr4pD00r#5658,fua,1,2.0,2
+Oni111#0111,fua,1,2.0,2
+Mr Kitty#0668,fua,1,2.0,2
+TurboTaco#8003,fua,3,1.0,1
+Zisko#7542,fua,1,2.0,2
+Rye#8602,fua,1,2.0,2
+Barrels#3744,fua,0,1.0,4
+julio#6286,fua,2,1.0,1
+Smitty#2403,fua,1,2.0,2
+Jobbiis#8938,fua,0,3.0,3
+ProdByNebula#6143,fua,0,5.0,3
+ALECgator13#4240,fua,2,1.0,1
+gigaSproule#4905,fua,1,2.0,2
+Josh🖤#7106,fua,0,4.0,3
+Spartacus Mills#4745,fua,0,1.0,4
+axel_hu28#9078,fua,1,2.0,2
+eekaner#4689,fua,0,1.0,4
+.SOUR.#1337,fua,1,1.0,1
+jacobhess#8353,suh,0,2.0,3
+UntouchedCow#6209,suh,0,2.0,3
+Hayden#5220,suh,0,3.0,3
+Tr4pD00r#5658,suh,0,1.0,4
+WolvesToTheUcl#1140,suh,0,1.0,4
+gigaSproule#4905,suh,0,1.0,4
+It'sRex#7264,suh,0,1.0,4
+ALECgator13#4240,suh,0,1.5,3
+Oni111#0111,suh,0,2.0,3
+Clinical Coady#6929,suh,0,2.0,3
+ReluctantGoalkeeper#3761,suh,1,2.0,2
+Smitty#2403,suh,0,1.0,4
+Mr Kitty#0668,suh,0,2.0,3
+Detective Bluto Mindpretzel#4072,suh,0,2.0,3
+julio#6286,suh,0,1.0,4
+Rye#8602,suh,1,2.0,2
+Zisko#7542,suh,1,2.0,2
+axel_hu28#9078,suh,0,1.0,4
+Dangy98#7562,suh,0,2.0,3
+Barrels#3744,suh,0,3.0,3
+Jobbiis#8938,suh,1,3.0,2
+TurboTaco#8003,suh,1,0.0,0
+jacobhess#8353,buh,0,1.0,0
+WolvesToTheUcl#1140,buh,0,0.0,1
+Tr4pD00r#5658,buh,0,1.0,0
+Barrels#3744,buh,0,2.0,0
+Detective Bluto Mindpretzel#4072,buh,0,1.0,0
+UntouchedCow#6209,buh,1,1.0,0
+Oni111#0111,buh,0,2.0,0
+Clinical Coady#6929,buh,0,1.0,0
+ALECgator13#4240,buh,2,1.0,2
+It'sRex#7264,buh,1,1.0,0
+ReluctantGoalkeeper#3761,buh,0,1.0,0
+dotdot#2176,buh,1,2.0,0
+julio#6286,buh,0,1.0,0
+Hayden#5220,buh,0,3.0,0
+gigaSproule#4905,buh,1,2.0,0
+Rye#8602,buh,0,1.0,0
+Mr Kitty#0668,buh,0,1.0,0
+Smitty#2403,buh,0,1.0,0
+Dangy98#7562,buh,0,1.0,0
+Josh🖤#7106,buh,1,2.0,0
+Jobbiis#8938,buh,1,2.0,0
+Zisko#7542,buh,0,1.0,0
+axel_hu28#9078,buh,1,2.0,0
+jacobhess#8353,shita,0,1.0,1
+It'sRex#7264,shita,2,1.0,1
+ReluctantGoalkeeper#3761,shita,0,0.0,2
+Josh🖤#7106,shita,0,3.0,0
+WolvesToTheUcl#1140,shita,2,0.0,0
+Oni111#0111,shita,2,3.0,0
+UntouchedCow#6209,shita,2,1.0,1
+gigaSproule#4905,shita,2,1.0,1
+Tr4pD00r#5658,shita,1,0.0,1
+Detective Bluto Mindpretzel#4072,shita,2,1.0,1
+Trilly#9714,shita,1,2.0,1
+dotdot#2176,shita,1,1.0,4
+Clinical Coady#6929,shita,2,2.0,2
+ALECgator13#4240,shita,0,1.0,1
+Smitty#2403,shita,1,2.0,1
+Roobin Neves#8817,shita,2,0.0,0
+julio#6286,shita,0,1.0,1
+Dangy98#7562,shita,0,1.0,1
+Mr Kitty#0668,shita,2,2.0,2
+Rye#8602,shita,0,1.0,1
+axel_hu28#9078,shita,0,1.0,1
+Jobbiis#8938,shita,1,2.0,1
+jacobhess#8353,brh,2,0.0,0
+julio#6286,brh,0,1.0,2
+WolvesToTheUcl#1140,brh,0,0.0,0
+ALECgator13#4240,brh,2,1.0,0
+Tr4pD00r#5658,brh,2,1.0,0
+Oni111#0111,brh,1,2.0,4
+Clinical Coady#6929,brh,1,2.0,4
+It'sRex#7264,brh,1,1.0,1
+UntouchedCow#6209,brh,1,2.0,4
+Mr Kitty#0668,brh,1,2.0,4
+Smitty#2403,brh,1,1.0,1
+gigaSproule#4905,brh,0,1.0,2
+ReluctantGoalkeeper#3761,brh,0,1.0,2
+Rye#8602,brh,0,1.0,2
+Detective Bluto Mindpretzel#4072,brh,1,2.0,4
+axel_hu28#9078,brh,1,1.0,1
+Zisko#7542,brh,1,1.0,1
+Dangy98#7562,brh,1,2.0,4
+Jobbiis#8938,brh,2,2.0,1
+eekaner#4689,brh,1,2.0,4
+Josh🖤#7106,brh,0,1.0,2
+Oni111#0111,toa,2,2.0,1
+julio#6286,toa,1,0.0,3
+UntouchedCow#6209,toa,2,1.0,3
+ReluctantGoalkeeper#3761,toa,1,2.0,0
+Tr4pD00r#5658,toa,1,2.0,0
+Barrels#3744,toa,0,1.0,0
+Spartacus Mills#4745,toa,1,1.0,0
+Dangy98#7562,toa,1,1.0,0
+jacobhess#8353,toa,2,1.0,3
+WolvesToTheUcl#1140,toa,3,1.0,2
+It'sRex#7264,toa,2,1.0,3
+Clinical Coady#6929,toa,1,0.0,3
+TurboTaco#8003,toa,2,2.0,1
+ALECgator13#4240,toa,2,1.0,3
+Smitty#2403,toa,2,0.0,4
+amongusman#2176,toa,2,1.0,3
+Rye#8602,toa,2,1.0,3
+Detective Bluto Mindpretzel#4072,toa,2,2.0,1
+eekaner#4689,toa,1,3.0,0
+Jobbiis#8938,toa,1,3.0,0
+Zisko#7542,toa,3,1.0,2
+Josh🖤#7106,toa,2,1.0,3
+UntouchedCow#6209,eva,3,0.0,3
+It'sRex#7264,eva,0,1.0,0
+Clinical Coady#6929,eva,1,1.0,1
+Oni111#0111,eva,2,1.0,2
+Tr4pD00r#5658,eva,2,0.0,3
+jacobhess#8353,eva,2,0.0,3
+julio#6286,eva,0,0.0,1
+Smitty#2403,eva,2,1.0,2
+Josh🖤#7106,eva,0,2.0,0
+amongusman#2176,eva,1,1.0,1
+Rye#8602,eva,1,1.0,1
+Dangy98#7562,eva,1,1.0,1
+WolvesToTheUcl#1140,eva,2,1.0,2
+gigaSproule#4905,eva,2,0.0,3
+Barrels#3744,eva,1,1.0,1
+ReluctantGoalkeeper#3761,eva,1,1.0,1
+Spartacus Mills#4745,eva,1,2.0,1
+Jobbiis#8938,eva,1,2.0,1
+Mr Kitty#0668,eva,2,2.0,0
+eekaner#4689,eva,2,3.0,0
+Zisko#7542,eva,0,1.0,0
+jacobhess#8353,muh,1,1.0,1
+It'sRex#7264,muh,1,3.0,0
+Oni111#0111,muh,2,1.0,4
+UntouchedCow#6209,muh,0,1.0,1
+Josh🖤#7106,muh,3,0.0,2
+Tr4pD00r#5658,muh,4,0.0,2
+Clinical Coady#6929,muh,0,500.0,0
+julio#6286,muh,0,0.0,0
+Dangy98#7562,muh,1,2.0,0
+WolvesToTheUcl#1140,muh,2,3.0,1
+Barrels#3744,muh,2,2.0,1
+ALECgator13#4240,muh,0,3.0,0
+ReluctantGoalkeeper#3761,muh,0,1000.0,0
+Mr Kitty#0668,muh,1,3.0,0
+TurboTaco#8003,muh,0,1.0000000000000412e+283,0
+Rye#8602,muh,1,2.0,0
+Jayden2nice#6143,muh,0,5.0,0
+gigaSproule#4905,muh,0,0.0,0
+Smitty#2403,muh,1,1.0,1
