@@ -7,7 +7,7 @@ import datetime as dt
 import plotly.graph_objects as go
 import tweepy
 from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_secret_apikey, \
-    twitter_access_token, twitter_secret_access_token, poll_channel
+    twitter_access_token, twitter_secret_access_token, poll_channel, help_brief, help_desc
 import asyncio
 
 # token - Discord bot token
@@ -109,22 +109,14 @@ bot = commands.Bot(command_prefix='$')
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
 
-@bot.command()
+@bot.command(brief=help_brief["ping"], description=help_desc["ping"])
 async def ping(ctx):
     latency = bot.latency
     await ctx.send(latency)
 
-@bot.command()
-async def neves(ctx):
-    await ctx.send("https://gfycat.com/unkemptsorefeline-wolverhampton-wanderers-fc-official-wolves")
-
-@bot.command()
-async def fifilza(ctx):
-    await ctx.send("https://giphy.com/gifs/fifa-esports-fifa19-fifaeworldcup-j44l37bp45nYTENNNF")
-
 # prediction table commands
 
-@bot.command()
+@bot.command(brief=help_brief["score"], description=help_desc["score"])
 async def score(ctx, game, score):
     results_score = pd.read_csv('data_wol/results.csv')
     pred_score = pd.read_csv('data_wol/predictions.csv')
@@ -164,7 +156,7 @@ async def score(ctx, game, score):
 
     await ctx.send(message)
 
-@bot.command()
+@bot.command(brief=help_brief["format"], description=help_desc["format"])
 async def format(ctx):
     results_format = pd.read_csv('data_wol/results.csv')
     nexts = results_format[results_format['wolves'].isnull()]['game']
@@ -173,7 +165,7 @@ async def format(ctx):
               "translates to 'Manchester City Home'. Next match is {} {} with a game code of '{}'.".format(teams[next[0:2]], ha[next[2]], next)
     await ctx.message.author.send(message)
 
-@bot.command()
+@bot.command(hidden=True)
 async def short_lb(ctx):
     pred_lb = pd.read_csv('data_wol/predictions.csv')
     lb = pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
@@ -186,7 +178,7 @@ async def short_lb(ctx):
                                               int(list(user['pts'])[0]))
     await ctx.send(message)
 
-@bot.command()
+@bot.command(hidden=True)
 async def leaderboard(ctx):
     full_pred_lb = pd.read_csv('data_wol/predictions.csv')
     full_lb = full_pred_lb.groupby(['user']).sum().sort_values(by=['pts'], ascending=False).reset_index()
@@ -210,19 +202,19 @@ async def leaderboard(ctx):
                                            font=dict(color='black', size=11), height= (500 / (temp_full_lb.shape[0] + 1))))
                               ])
         fig.update_layout(width=350, height=700) #(25 * (full_lb.shape[0] + 2))
-        fig.write_image("table{}.png".format(i))
-        files.append("table{}.png".format(i))
+        fig.write_image("data_wol/table{}.png".format(i))
+        files.append("data_wol/table{}.png".format(i))
 
     await asyncio.wait([ctx.send(file=discord.File(f)) for f in files])
 
-@bot.command()
+@bot.command(hidden=True)
 async def refresh(ctx):
     refresh_scores()
     await ctx.send('Scores have been updated.')
 
 # tweet commands
 
-@bot.command()
+@bot.command(hidden=True)
 async def tweet(ctx, *, tweet):
     auth = tweepy.OAuthHandler(twitter_apikey, twitter_secret_apikey)
     auth.set_access_token(twitter_access_token, twitter_secret_access_token)
@@ -230,7 +222,7 @@ async def tweet(ctx, *, tweet):
     api.update_status(tweet)
     await ctx.send('You tried to Tweet: {}'.format(tweet))
 
-@bot.command()
+@bot.command(brief=help_brief["tweethelp"], description=help_desc["tweethelp"])
 async def tweethelp(ctx):
     await ctx.send("Jeff Shi can tweet! Any message with three 💬 reactions will be tweeted to the Discord Twitter account "
                    "(as long as mods permit). Messages with the 🔹 reaction have been sent. Check out the server Twitter page "
@@ -278,26 +270,32 @@ async def on_reaction_add(reaction, user):
 
 # poll commands
 
-@bot.command()
+@bot.command(hidden=True)
 async def addpoll(ctx, code, limit, *poll_args):
     poll = ' '.join(poll_args)
+    code = code.lower()
     polls = pd.read_csv('data_wol/polls.csv')
 
     if poll_code_exists(polls, code):
         msg = "Code '{}' already exists. Try a new code.".format(code)
     else:
         add_polls_row(polls, code, poll, limit)
-        await bot.get_channel(poll_channel).send("New poll added:\n**{}**\nCode: **{}**\nResponse limit: **{}**\nRespond with command '$vote {} *RESPONSE*'".format(poll, code, limit, code))
+        await bot.get_channel(poll_channel).send("New poll added:\n**{}**\n"
+                                                 "Code: **{}**\nResponse limit: **{}**\n"
+                                                 "Respond in #poll-spam with command '$vote {} *RESPONSE*'".format(poll, code, limit, code))
         msg = "Poll added with code {}. Response limited to {} per user.".format(code, limit)
     await ctx.send(msg)
 
-@bot.command()
+@bot.command(hidden=True)
 async def closepoll(ctx, code, delete):
+    code = code.lower()
+    delete = delete.lower()
     polls = pd.read_csv('data_wol/polls.csv')
     responses = pd.read_csv("data_wol/poll_responses.csv")
 
     if delete.lower() == "del":
-        polls[polls['code'] != code.lower()].to_csv('data_wol/polls.csv', index=False)
+        polls[polls['code'] != code].to_csv('data_wol/polls.csv', index=False)
+        responses[responses['code'] != code].to_csv("data_wol/poll_responses.csv", index=False)
         msg = "Poll with code {} removed.".format(code)
 
     elif delete.lower() == "clo":
@@ -305,7 +303,7 @@ async def closepoll(ctx, code, delete):
         if len(pl_ind) > 0:
             polls.at[pl_ind[0], "open"] = 0
             polls.to_csv('data_wol/polls.csv', index=False)
-            close_msg = "Poll closed:\n**{}**\nCode: **{}**".format(polls.at[pl_ind[0], "poll"], code)
+            close_msg = "Poll closed:\nCode: **{}**".format(code)
             results_msg = get_poll_results(responses, polls, code)
             await bot.get_channel(poll_channel).send(close_msg)
             await bot.get_channel(poll_channel).send(results_msg)
@@ -316,19 +314,34 @@ async def closepoll(ctx, code, delete):
         msg = "Wrong code. Please use 'del' to delete poll or 'clo' to close poll."
     await ctx.send(msg)
 
-@bot.command()
-async def vote(ctx, code, *response_args):
-    response = ' '.join(response_args)
+@bot.command(brief=help_brief["openpolls"], description=help_desc["openpolls"])
+async def openpolls(ctx):
+    polls = pd.read_csv('data_wol/polls.csv')
+
+    open_polls = polls[polls["open"] == 1]
+    if open_polls.shape[0] == 0:
+        msg = "No open polls."
+    else:
+        msg = ""
+        for index, row in open_polls.iterrows():
+            msg += "Poll:**{}**\nCode: **{}**  Vote Limit: **{}**\n\n".format(row["poll"],row["code"], row["vote_limit"])
+    await ctx.send(msg.strip())
+
+@bot.command(brief=help_brief["vote"], description=help_desc["vote"])
+async def vote(ctx, code, *full_response):
+    response = ' '.join(full_response)
+    code = code.lower()
+    polls = pd.read_csv('data_wol/polls.csv')
     responses = pd.read_csv("data_wol/poll_responses.csv")
 
-    poll_limit = get_poll_info(code)["vote_limit"].to_list()
+    poll_limit = get_poll_info(polls, code)["vote_limit"].to_list()
     if len(poll_limit) > 0:
         prev_response = get_user_responses(responses, code, ctx.author)
         if prev_response.shape[0] >= poll_limit[0]:
             msg = "You already voted {} time(s). Your vote(s):\n".format(prev_response.shape[0])
             for resp in prev_response["response"].to_list():
                 msg += resp + ", "
-            msg = msg[:-2] + "\nTo change vote, use command '$cvote *CODE* *RESPONSE*'."
+            msg = msg[:-2] + "\nTo change vote, use command '$cvote *CODE* *NEW_RESPONSE*'."
         else:
             add_responses_row(responses, code, response, ctx.author)
             msg = "You voted for {}.".format(response)
@@ -337,8 +350,9 @@ async def vote(ctx, code, *response_args):
 
     await ctx.send(msg)
 
-@bot.command()
+@bot.command(brief=help_brief["getvote"], description=help_desc["getvote"])
 async def getvote(ctx, code):
+    code = code.lower()
     responses = pd.read_csv("data_wol/poll_responses.csv")
 
     prev_response = get_user_responses(responses, code, ctx.author)
@@ -348,9 +362,10 @@ async def getvote(ctx, code):
 
     await ctx.send(msg[:-2] + "\nTo change vote, use command '$cvote *CODE* *RESPONSE*'.")
 
-@bot.command()
-async def cvote(ctx, code, *response_args):
-    response = ' '.join(response_args)
+@bot.command(brief=help_brief["cvote"], description=help_desc["cvote"])
+async def cvote(ctx, code, *new_response):
+    response = ' '.join(new_response)
+    code = code.lower()
     responses = pd.read_csv("data_wol/poll_responses.csv")
     polls = pd.read_csv("data_wol/polls.csv")
 
@@ -365,12 +380,14 @@ async def cvote(ctx, code, *response_args):
 
     await ctx.send(msg)
 
-@bot.command()
+@bot.command(hidden=True)
 async def results(ctx, code):
+    code = code.lower()
     responses = pd.read_csv("data_wol/poll_responses.csv")
     polls = pd.read_csv("data_wol/polls.csv")
 
     if poll_code_exists(polls, code):
+
         msg = get_poll_results(responses, polls, code)
     else:
         msg = "Poll with code {} does not exist.".format(code)

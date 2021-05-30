@@ -1,5 +1,5 @@
 wol_bot_static.py
-data_wol/
+data_wol/**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -124,12 +124,4 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
-.pyre/
-data_wol/predictions.csv
-.idea/wolves-pred-bot.iml
-.idea/workspace-DEV00172.xml
-.idea/workspace.xml
-data_wol/predictions.csv
-data_wol/results.csv
-.idea/wolves-pred-bot.iml
+
