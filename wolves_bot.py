@@ -1,7 +1,7 @@
+from __init__ import *
+
 from discord.ext import commands
 import discord
-import math
-import pandas as pd
 from numpy import nan
 import datetime as dt
 import plotly.graph_objects as go
@@ -9,6 +9,12 @@ import tweepy
 from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_secret_apikey, \
     twitter_access_token, twitter_secret_access_token, poll_channel, help_brief, help_desc
 import asyncio
+from random import randrange
+import json
+from bs4 import BeautifulSoup
+import requests
+import random
+from SG2 import Player, Club
 
 # token - Discord bot token
 # teams - dictionary for converting team code to full team name
@@ -100,10 +106,102 @@ def add_responses_row(responses, code, response, author):
 def poll_code_exists(polls, code):
     return code in polls['code'].unique()
 
+def clean_mentions_str(mention):
+    return mention.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+
+async def make_sg_table(df_table):
+    df_table["ppg"] = df_table["pts"] / (df_table["w"] + df_table["l"] + df_table["d"])
+    df_table["ppg"] = [round(x, 2) for x in df_table["ppg"]]
+    df_table.sort_values(by=["elo", "ppg", "gd"], ascending=(False, False, False), inplace=True)
+    df_table["rank"] = range(1, len(df_table) + 1)
+    df_table.set_index("rank", inplace=True)
+    df_table.columns = ["User", "Wins", "Losses", "Draws", "  GF  ", "  GA  ", "  GD  ", "  Pts  ", "  ELO  ", "  PPG  "]
+    df_table[["Wins", "Losses", "Draws", "  GF  ", "  GA  ", "  GD  ", "  Pts  ", "  ELO  "]] = df_table[["Wins", "Losses", "Draws", "  GF  ", "  GA  ", "  GD  ", "  Pts  ", "  ELO  "]].astype(int)
+    df_table["User"] = [await bot.fetch_user(int(id)) for id in df_table["User"]]
+    df_table["User"] = [id.name for id in df_table["User"]]
+    ax = plt.subplot(911, frame_on=False)  # no visible frame
+    ax.xaxis.set_visible(False)  # hide the x axis
+    ax.yaxis.set_visible(False)  # hide the y axis
+    tbl = table(ax, df_table)  # where df is your data frame
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(10)
+    tbl.auto_set_column_width(col=list(range(df_table.shape[1])))
+    plt.savefig('data_wol/sg_table.png')
+    ax.clear()
+
+def update_sg_table(df_table, user, res, gf, ga, pts, sort=False):
+    # TODO: Add ELO ratings
+    if user in df_table["user"].values:
+        print("user found")
+        row = df_table[df_table["user"] == user].iloc[0]
+        row.update(pd.Series([
+            row[res] + 1,
+            row["gf"] + gf,
+            row["ga"] + ga,
+            row["pts"] + pts
+        ], index=[res, "gf", "ga", "pts"]))
+        df_table.loc[row.name] = row
+    else:
+        print("user not found")
+        temp = pd.Series([len(df_table) + 1, str(user), 0, 0, 0, 0, 0, 0, 0, 1500], index=df_table.columns)
+        df_table = df_table.append(temp, ignore_index=True)
+        row = df_table[df_table["user"] == user].iloc[0]
+        row.update(pd.Series([
+            row[res] + 1,
+            row["gf"] + gf,
+            row["ga"] + ga,
+            row["pts"] + pts
+        ], index=[res, "gf", "ga", "pts"]))
+        df_table.loc[row.name] = row
+
+    if sort:
+        df_table["gd"] = df_table["gf"] - df_table["ga"]
+        df_table["ppg"] = df_table["pts"] / (df_table["w"] + df_table["d"] + df_table["l"])
+        df_table.sort_values(by=["elo", "ppg", "gd"], ascending=False, inplace=True)
+        df_table.drop("ppg", axis=1, inplace=True)
+        df_table["rank"] = range(1, len(df_table) + 1)
+
+    return df_table
+
+def check_if_open(user1, user2):
+    try:
+        with open('data_wol/sg_open.json', 'r', encoding='utf-8') as f:
+            comp_open = json.load(f)
+        return comp_open[user1] == "open" and comp_open[user2] == "open"
+    except:
+        return False
+
+def update_elo(df_table, user1, user2, result):
+    if result == ("w", "l"):
+        res = (1, 0)
+    elif result == ("l", "w"):
+        res = (0, 1)
+    else:
+        res = (0.5, 0.5)
+    row1 = df_table[df_table["user"] == user1].iloc[0]
+    row2 = df_table[df_table["user"] == user2].iloc[0]
+    elo1 = int(row1["elo"])
+    elo2 = int(row2["elo"])
+    t1_trans = 10 ** (elo1 / 400)
+    t2_trans = 10 ** (elo2 / 400)
+    t1_exp = t1_trans / (t1_trans + t2_trans)
+    t2_exp = t2_trans / (t1_trans + t2_trans)
+    expected = (t1_exp, t2_exp)
+    K = 16
+    row1["elo"] = int(elo1 + K * (res[0] - expected[0]))
+    row2["elo"] = int(elo2 + K * (res[1] - expected[1]))
+    df_table.loc[row1.name] = row1
+    df_table.loc[row2.name] = row2
+    return df_table
+
 #refresh scores on startup
 refresh_scores()
 
-bot = commands.Bot(command_prefix='$')
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(intents=intents, command_prefix='$')
+
+sg_table_loc = "data_wol/sg_table_bronze.csv"
 
 @bot.event
 async def on_ready():
@@ -162,7 +260,8 @@ async def format(ctx):
     nexts = results_format[results_format['wolves'].isnull()]['game']
     next = nexts[min(nexts.index)]
     message = "Command should be formatted as '$score GAMECODE WOLSCORE-OPPSCORE'. Example, '$score mch 2-1' where 'mch' " \
-              "translates to 'Manchester City Home'. Next match is {} {} with a game code of '{}'.".format(teams[next[0:2]], ha[next[2]], next)
+              "translates to 'Manchester City Home'. Next match is {} {} with a game code of '{}'.\n\nScoring is as follows:"\
+              "\n2 pts for the correct result\n1 pt for each correct goal total.".format(teams[next[0:2]], ha[next[2]], next)
     await ctx.message.author.send(message)
 
 @bot.command(hidden=True)
@@ -211,6 +310,150 @@ async def leaderboard(ctx):
 async def refresh(ctx):
     refresh_scores()
     await ctx.send('Scores have been updated.')
+
+# fa cup
+
+@bot.command()
+async def confirm_fa(ctx):
+    confirms = pd.read_csv("data_wol/fa_confirmed.csv")
+    if ctx.author.id in set(confirms["id"]):
+        await ctx.send('You are already registered.')
+    else:
+        confirms = confirms.append(pd.DataFrame([[ctx.author.id, "confirmed"]], columns=["id","confirmed"]), ignore_index=True)
+        confirms.to_csv("data_wol/fa_confirmed.csv", index=False)
+        await ctx.send('You are confirmed for the upcoming Wolves Prediction FA Cup.')
+
+@bot.command(hidden=True, pass_context=True)
+async def nextround(ctx):
+    matchups = pd.read_csv("data_wol/matchups.csv")
+    comp = json.load(open('data_wol/comp.json'))
+    confirms = pd.read_csv("data_wol/fa_confirmed.csv")
+    confirms_list = list(set(confirms["id"]))
+
+    if comp["tot"] == comp["done"]:
+        champ = list(set(matchups[matchups["round"] == comp["done"]]["winner"]))[0]
+        user = bot.get_user(int(champ))
+        print("Tourney is over! Congrats {}".format(user))
+
+    elif comp["name"] == "none":
+
+        # start comp
+        #
+        # is this a general formula? no because confirms go away after qualifier
+
+        all_mems = [member.id for member in ctx.guild.members]
+        tot_mems = len(all_mems)
+
+        comp["name"] = "facup"
+        comp["tot"] = math.ceil(math.log(tot_mems,2))
+        comp["quals"] = comp["tot"] - 7 if comp["tot"] > 7 else 0
+        comp["done"] = 1
+        comp["status"] = "open"
+
+        rd = comp["done"]
+        bye = ((2 ** (comp["tot"] - rd)) * 2) - tot_mems
+        print(bye)
+
+        while bye > 0:
+            if len(confirms_list) > 0:
+                conf_bye = confirms_list.pop(randrange(len(confirms_list)))
+                all_mems.remove(conf_bye)
+                matchups = matchups.append(pd.DataFrame([[rd, conf_bye, -1, "", "bye", conf_bye]],
+                                              columns=list(matchups.columns)), ignore_index=True)
+            else:
+                reg_bye = all_mems.pop(randrange(len(all_mems)))
+                matchups = matchups.append(pd.DataFrame([[rd, reg_bye, -1, "", "bye", reg_bye]],
+                                                        columns=list(matchups.columns)), ignore_index=True)
+            bye -= 1
+
+        while len(all_mems) > 1:
+            home = all_mems.pop(randrange(len(all_mems)))
+            away = all_mems.pop(randrange(len(all_mems)))
+            matchups = matchups.append(pd.DataFrame([[rd, home, away, "", "", ""]],
+                                                    columns=list(matchups.columns)), ignore_index=True)
+
+        if len(all_mems) > 0:
+            reg_bye = all_mems.pop(randrange(len(all_mems)))
+            matchups = matchups.append(pd.DataFrame([[rd, reg_bye, -1, "", "bye", reg_bye]],
+                                                    columns=list(matchups.columns)), ignore_index=True)
+
+        print(matchups[matchups["round"] == 1].shape[0])
+        matchups.to_csv("data_wol/matchups.csv", index=False)
+        with open('data_wol/comp.json', 'w', encoding='utf-8') as f:
+            json.dump(comp, f, ensure_ascii=False, indent=4)
+        #pd.DataFrame(columns=["id","confirmed"]).to_csv("data_wol/fa_confirmed.csv", index=False)
+
+    else:
+        print("match-ups for round > 1")
+        matchups = pd.read_csv("data_wol/matchups.csv")
+        comp = json.load(open('data_wol/comp.json'))
+        qual = comp["quals"] < comp["done"]
+        confirms_list = []
+        if qual:
+            confirms = pd.read_csv("data_wol/fa_confirmed.csv")
+            confirms_list = list(set(confirms["id"]))
+        winners = list(set(matchups[matchups["round"] == comp["done"]]["winner"]))
+        comp["done"] += 1
+        rd = comp["done"]
+        bye = ((2 ** (comp["tot"] - rd)) * 2) - len(winners)
+
+        while bye > 0:
+            if len(confirms_list) > 0:
+                conf_bye = confirms_list.pop(randrange(len(confirms_list)))
+                winners.remove(conf_bye)
+                matchups = matchups.append(pd.DataFrame([[rd, conf_bye, -1, "", "bye", conf_bye]],
+                                              columns=list(matchups.columns)), ignore_index=True)
+            else:
+                reg_bye = winners.pop(randrange(len(winners)))
+                matchups = matchups.append(pd.DataFrame([[rd, reg_bye, -1, "", "bye", reg_bye]],
+                                                        columns=list(matchups.columns)), ignore_index=True)
+            bye -= 1
+
+        while len(winners) > 1:
+            home = winners.pop(randrange(len(winners)))
+            away = winners.pop(randrange(len(winners)))
+            matchups = matchups.append(pd.DataFrame([[rd, home, away, "", "", ""]],
+                                                    columns=list(matchups.columns)), ignore_index=True)
+
+        if len(winners) > 0:
+            reg_bye = winners.pop(randrange(len(winners)))
+            matchups = matchups.append(pd.DataFrame([[rd, reg_bye, -1, "", "bye", reg_bye]],
+                                                    columns=list(matchups.columns)), ignore_index=True)
+
+        print(matchups[matchups["round"] == comp["done"]].shape[0])
+        matchups.to_csv("data_wol/matchups.csv", index=False)
+        with open('data_wol/comp.json', 'w', encoding='utf-8') as f:
+            json.dump(comp, f, ensure_ascii=False, indent=4)
+        #pd.DataFrame(columns=["id","confirmed"]).to_csv("data_wol/fa_confirmed.csv", index=False)
+
+@bot.command(hidden=True, pass_context=True)
+async def simulate(ctx):
+    matchups = pd.read_csv("data_wol/matchups.csv")
+    comp = json.load(open('data_wol/comp.json'))
+    if comp["done"] == comp["quals"]:
+        confirms = pd.read_csv("data_wol/fa_confirmed.csv")
+        confirms_list = list(set(confirms["id"]))
+    winners = []
+
+    for index, row in matchups.iterrows():
+        if row["a_pred"] == "bye":
+            winners.append(row["winner"])
+        elif row["winner"] > 100:
+            winners.append(row["winner"])
+        else:
+            if randrange(2) == 0:
+                #######
+                ##
+                ##   HOW DO I GET A USER NAME FROM THE USER ID???
+                ##
+                ########
+                print(await bot.fetch_user(row["home"]))
+                winners.append(row["home"])
+            else:
+                winners.append(row["away"])
+
+    matchups["winner"] = winners
+    matchups.to_csv("data_wol/matchups.csv", index=False)
 
 # tweet commands
 
@@ -268,6 +511,76 @@ async def on_reaction_add(reaction, user):
     return
     #await reaction.message.channel.send(reaction.emoji)
 
+## SG stuff
+#with open('data_wol/comp.json', 'w', encoding='utf-8') as f:
+ #   json.dump(comp, f, ensure_ascii=False, indent=4)
+
+  #  comp = json.load(open('data_wol/comp.json'))
+@bot.command()
+async def sg_comp(ctx, op):
+    if op.lower() in ['open', 'closed']:
+        with open('data_wol/sg_open.json', 'r', encoding='utf-8') as f:
+            comp_open = json.load(f)
+        comp_open[str(ctx.author.id)] = op
+        with open('data_wol/sg_open.json', 'w', encoding='utf-8') as f:
+            json.dump(comp_open, f, ensure_ascii=False, indent=4)
+        await ctx.send("<@{}> is now {} for league matches.".format(ctx.author.id, op))
+    elif op.lower() == 'help':
+        await ctx.send("Use this command to tell Jeff if you want your matches to count towards the official table.")
+    else:
+        await ctx.send("<@{}> Not valid. Please use 'open' or 'closed' to indicate whether you are open for ranked matches or not. Use 'help' for info.".format(ctx.author.id))
+
+@bot.command()
+async def sg_open(ctx):
+    with open('data_wol/sg_open.json', 'r', encoding='utf-8') as f:
+        comp_open = json.load(f)
+    open_table = ""
+    for key in comp_open.keys():
+        open_table += "| {} |  {}\n".format(comp_open[key].replace("open", "  OPEN  ").upper(), await bot.fetch_user(int(key)))
+    await ctx.send(open_table)
+
+@bot.command()
+async def sg_table(ctx):
+    df_table = pd.read_csv(sg_table_loc, dtype={'user': 'str'})
+    await make_sg_table(df_table)
+    await asyncio.wait([ctx.send(file=discord.File("data_wol/sg_table.png"))])
+
+@bot.event
+async def on_message_edit(message_before, message_after):
+
+    if len(message_after.embeds) > 0 and message_after.channel.id in [914630952414761092, 915742189424898120]:
+        emb = message_after.embeds[0]
+
+        if emb.description.split("\n")[2] == 'Status - ***Full-time***':
+            score = emb.description.split("\n")[0]
+            spl_score = score.split('`')
+            home = spl_score[2].replace("*","").strip()
+            away = spl_score[4].replace("*","").strip()
+            hscore = int(spl_score[3].split("-")[0])
+            ascore = int(spl_score[3].split("-")[1])
+
+            df_table = pd.read_csv(sg_table_loc, dtype={'user': 'str'})
+
+            hmgr = clean_mentions_str(emb.fields[0].value.split("\n\n")[0].replace("Manager: ", ""))
+            amgr = clean_mentions_str(emb.fields[1].value.split("\n\n")[0].replace("Manager: ", ""))
+
+            if hscore > ascore:
+                pts = (3,0)
+                res = ("w", "l")
+            elif hscore < ascore:
+                pts = (0,3)
+                res = ("l", "w")
+            else:
+                pts = (1,1)
+                res = ("d", "d")
+            if check_if_open(hmgr, amgr):
+                df_table = update_sg_table(df_table, hmgr, res[0], hscore, ascore, pts[0])
+                df_table = update_sg_table(df_table, amgr, res[1], ascore, hscore, pts[1], sort=True)
+                df_table = update_elo(df_table, hmgr, amgr, res)
+                df_table.to_csv(sg_table_loc, index=False)
+                await message_after.channel.send("Result counted towards table.\n{}: {}\n{}: {}".format(home, hscore, away, ascore))
+            else:
+                await message_after.channel.send("Result does not count. One or more teams are closed for competitive matches.")
 # poll commands
 
 @bot.command(hidden=True)
@@ -394,4 +707,100 @@ async def results(ctx, code):
 
     await ctx.send(msg)
 
+#### SOCCER GURU???? ####
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 60, commands.BucketType.user)
+async def sg_claim(ctx):
+
+    randnum = random.random()
+    if randnum > 0.70:
+        url = "https://www.futhead.com/ut/random/redirect/?type=bronze"
+        color = "Bronze"
+    elif randnum > 0.40:
+        url = "https://www.futhead.com/ut/random/redirect/?type=silver"
+        color = "Silver"
+    elif randnum > 0.08:
+        url = "https://www.futhead.com/ut/random/redirect/?type=gold"
+        color = "Gold"
+    else:
+        url = "https://www.futhead.com/ut/random/redirect/?type=special"
+        color = "Special"
+
+    req = requests.get(url)
+    soup = BeautifulSoup(req.content, "html.parser")
+
+    name = soup.select_one("div.playercard-name").text.strip().title()
+    rating = soup.select_one(".playercard-rating").text.strip()
+    position = soup.select_one(".playercard-position").text.strip()
+    team = soup.select_one("#info-tab > div > div:nth-child(1) > div.col-xs-5.player-sidebar-value").text.strip()
+    league = soup.select_one("#info-tab > div > div:nth-child(2) > div.col-xs-5.player-sidebar-value").text.strip()
+    country = soup.select_one("#info-tab > div > div:nth-child(3) > div.col-xs-5.player-sidebar-value").text.strip()
+    ctype = soup.select_one("#info-tab > div > div:nth-child(4) > div.col-xs-5.player-sidebar-value").text.strip()
+
+    stats = []
+    for x in range(1, 7):
+        stats.append(int(soup.select_one(".playercard-attr.playercard-attr" + str(x)).text.strip().split(" ")[0]))
+
+    new_plr = Player(name, rating, position, stats, team, league, country, color)
+
+    try:
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+            ex_clb = json.load(f)
+
+        ex_clb["squad"].append(new_plr.to_dict())
+
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+            json.dump(ex_clb, f, ensure_ascii=False, indent=4)
+    except:
+        new_clb = {
+            "name" : str(ctx.author.id),
+            "squad" : [new_plr.to_dict()]
+        }
+
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+            json.dump(new_clb, f, ensure_ascii=False, indent=4)
+
+    await ctx.send("```{} ({}) joins your club!\n"\
+             "Rating: {}\nPosition: {}\n\n"\
+             "PAC: {}     DRI: {}\nSHO: {}     DEF: {}\nPAS: {}     PHY: {}```".format(name, color, rating, position, stats[0],
+                                                                            stats[3], stats[1], stats[4], stats[2], stats[5]))
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_club(ctx, page: int):
+    try:
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+            ex_clb = Club(json.load(f))
+            ex_clb.to_list(page)
+            await asyncio.wait([ctx.send(file=discord.File("data_sg/temp_club.png"))])
+    except Exception as e:
+        print(e)
+        await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
+
+
+## error handlers
+
+@sg_claim.error
+async def sg_claim_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        msg = 'This command is ratelimited, please try again in {:.2f}s'.format(error.retry_after)
+        await ctx.send(msg)
+    else:
+        raise error
+
+@sg_club.error
+async def sg_club_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        msg = "Please specify which page of your club you want. '$sg_club 1' gets the 1st page."
+        await ctx.send(msg)
+    else:
+        raise error
+
+'''
+@bot.event
+async def on_message(message):
+    if message.clean_content.lower().strip() == "thanks jeff":
+        await message.channel.send("You're welcome")
+'''
 bot.run(token)
