@@ -778,6 +778,17 @@ async def sg_club(ctx, page: int):
         print(e)
         await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
 
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_show(ctx, player: str):
+    try:
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+            ex_clb = Club(json.load(f))
+        msg = ex_clb.search(player)
+        await ctx.send(msg)
+    except Exception as e:
+        print(e)
+        await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
 
 ## error handlers
 
@@ -790,6 +801,7 @@ async def sg_claim_error(ctx, error):
         raise error
 
 @sg_club.error
+
 async def sg_club_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         msg = "Please specify which page of your club you want. '$sg_club 1' gets the 1st page."

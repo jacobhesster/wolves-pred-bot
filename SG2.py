@@ -1,5 +1,7 @@
 from __init__ import *
 
+from textdistance import levenshtein
+
 class Player:
 
     def __init__(self, name, rating, pos, stats, team, leag, country, ctype):
@@ -27,13 +29,26 @@ class Club:
         self.df_club = pd.DataFrame.from_records(source["squad"])
         self.name = source["name"]
 
+    def search(self, player):
+        self.df_club["levdist"] = self.df_club.apply(lambda x: levenshtein.distance(x['name'].lower(),  player.lower()), axis=1)
+        df_dist = self.df_club[self.df_club["levdist"] < 2].sort_values(by="levdist").reset_index()
+
+        if df_dist.shape[0] > 0:
+            match = df_dist.loc[0]
+            return "```{} ({})  Rating: {}\nPosition: {}\nNation: {}\nTeam: {}\nLeague: {}\n\n" \
+            "PAC: {}     DRI: {}\nSHO: {}     DEF: {}\nPAS: {}     PHY: {}```".format(match["name"], match["ctype"],
+                                match["rat"], match["pos"], match["country"], match["tm"], match["leag"],
+                                match["pac"], match["dri"], match["sho"], match["dff"], match["pas"], match["phy"])
+        else:
+            return "No match for {}".format(player)
+
     def to_list(self, inp_page):
         if inp_page * 10 > self.df_club.shape[0]:
             page = math.ceil(self.df_club.shape[0] / 10)
         else:
             page = inp_page
 
-        clb_page = self.df_club.sort_values(by="rat", ascending=False).iloc[((page - 1) * 10):(page * 10)].reset_index()
+        clb_page = self.df_club.sort_values(by="rat", ascending=False).reset_index().iloc[((page - 1) * 10):(page * 10)]
         clb_page["stats"] = clb_page["pac"] + clb_page["sho"] +  clb_page["pas"] + clb_page["dri"] + clb_page["dff"] + clb_page["phy"]
         clb_page = clb_page[["name", "pos", "rat", "stats", "country", "leag"]]
         clb_page.columns = ["Name", " Pos ", "Rating", "Stats", "Country", "League"]
