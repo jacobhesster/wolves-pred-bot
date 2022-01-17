@@ -11,10 +11,7 @@ from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_
 import asyncio
 from random import randrange
 import json
-from bs4 import BeautifulSoup
-import requests
-import random
-from SG2 import Player, Club
+from SG2 import Player, Club, claim
 
 # token - Discord bot token
 # teams - dictionary for converting team code to full team name
@@ -712,37 +709,8 @@ async def results(ctx, code):
 @bot.command(hidden=True)
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def sg_claim(ctx):
-
-    randnum = random.random()
-    if randnum > 0.70:
-        url = "https://www.futhead.com/ut/random/redirect/?type=bronze"
-        color = "Bronze"
-    elif randnum > 0.40:
-        url = "https://www.futhead.com/ut/random/redirect/?type=silver"
-        color = "Silver"
-    elif randnum > 0.08:
-        url = "https://www.futhead.com/ut/random/redirect/?type=gold"
-        color = "Gold"
-    else:
-        url = "https://www.futhead.com/ut/random/redirect/?type=special"
-        color = "Special"
-
-    req = requests.get(url)
-    soup = BeautifulSoup(req.content, "html.parser")
-
-    name = soup.select_one("div.playercard-name").text.strip().title()
-    rating = soup.select_one(".playercard-rating").text.strip()
-    position = soup.select_one(".playercard-position").text.strip()
-    team = soup.select_one("#info-tab > div > div:nth-child(1) > div.col-xs-5.player-sidebar-value").text.strip()
-    league = soup.select_one("#info-tab > div > div:nth-child(2) > div.col-xs-5.player-sidebar-value").text.strip()
-    country = soup.select_one("#info-tab > div > div:nth-child(3) > div.col-xs-5.player-sidebar-value").text.strip()
-    ctype = soup.select_one("#info-tab > div > div:nth-child(4) > div.col-xs-5.player-sidebar-value").text.strip()
-
-    stats = []
-    for x in range(1, 7):
-        stats.append(int(soup.select_one(".playercard-attr.playercard-attr" + str(x)).text.strip().split(" ")[0]))
-
-    new_plr = Player(name, rating, position, stats, team, league, country, color)
+    new_plr = claim()
+    new_plr.get_card()
 
     try:
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
@@ -761,10 +729,8 @@ async def sg_claim(ctx):
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
             json.dump(new_clb, f, ensure_ascii=False, indent=4)
 
-    await ctx.send("```{} ({}) joins your club!\n"\
-             "Rating: {}\nPosition: {}\n\n"\
-             "PAC: {}     DRI: {}\nSHO: {}     DEF: {}\nPAS: {}     PHY: {}```".format(name, color, rating, position, stats[0],
-                                                                            stats[3], stats[1], stats[4], stats[2], stats[5]))
+    await ctx.send("{} ({}) joins your club!".format(new_plr.name, new_plr.ctype))
+    await asyncio.wait([ctx.send(file=discord.File("finished_card.png"))])
 
 @bot.command(hidden=True)
 @commands.cooldown(1, 5, commands.BucketType.user)
