@@ -728,7 +728,7 @@ async def sg_claim(ctx):
         with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
             json.dump(new_xi, f, ensure_ascii=False, indent=4)
 
-    await ctx.send("{} ({}) joins your club!".format(new_plr.name, new_plr.ctype))
+    await ctx.send("<@{}> {} ({}) joins your club!".format(ctx.author.id, new_plr.name, new_plr.ctype))
     await asyncio.wait([ctx.send(file=discord.File(new_plr_card))])
 
 @bot.command(hidden=True)
@@ -842,6 +842,27 @@ async def sg_del(ctx, *player: str):
         print(e)
         print(traceback.format_exc())
         await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_swap(ctx, n1: int, n2: int):
+    try:
+        if (n1 <= 11 and n1 > 0) and (n2 <= 11 and n2 > 0):
+            with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+                xi_obj = XI(source=json.load(f))
+
+            temp = xi_obj.xi[str(n1)]["plr"]
+            xi_obj.xi[str(n1)]["plr"] = xi_obj.xi[str(n2)]["plr"]
+            xi_obj.xi[str(n2)]["plr"] = temp
+
+            with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+                json.dump(xi_obj.to_dict(), f, ensure_ascii=False, indent=4)
+
+            await ctx.send("Swapped positions {} and {}.".format(n1, n2))
+        else:
+            await ctx.send("Invalid input. Please use numbers 1 to 11: $sg_swap 1 3")
+    except:
+        await ctx.send("Invalid input. Please use numbers 1 to 11: $sg_swap 1 3")
 
 @bot.command(hidden=True)
 @commands.cooldown(1, 5, commands.BucketType.user)

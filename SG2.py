@@ -266,8 +266,14 @@ class XI:
         with open(FORM_OFFSETS, 'r', encoding='utf-8') as f:
             offsets = json.load(f)[self.form]
 
-        base = Image.open("data_sg/imgs/xi_bg.png").convert("RGBA")
-        base = base.resize((1200, 1200))
+        font = ImageFont.truetype(FONT_TYPE, size=20)
+        txt_fill = "rgb(255, 255, 255)"
+
+        #base = Image.open("data_sg/imgs/xi_bg.png").convert("RGBA")
+        #base = base.resize((1200, 1200))
+        base = Image.new("RGBA", (1200,1200))
+        draw = ImageDraw.Draw(base)
+        draw.rectangle([(0,0), (1200,1200)], fill="#000000")
         na_card = Image.open("data_sg/imgs/no_card.png").convert("RGBA")
         na_card = na_card.resize((round(na_card.size[0] * 0.34), round(na_card.size[1] * 0.3)))
         na_w, na_l = na_card.size
@@ -275,12 +281,21 @@ class XI:
             if self.xi[str(i)]["plr"] == "":
                 base.paste(na_card, (round(offsets[str(i)][0] - (na_w / 2)),
                                      round(offsets[str(i)][1] - (na_l / 2))), na_card)
+                draw.text((round(offsets[str(i)][0] - (na_w / 2.5)),
+                           round(offsets[str(i)][1] + (na_l / 2.5))), str(i), fill=txt_fill, font=font)
+                draw.text((round(offsets[str(i)][0] + (na_w / 3.5)),
+                           round(offsets[str(i)][1] + (na_l / 2.5))), str(self.xi[str(i)]["pos"]), fill=txt_fill, font=font)
             else:
                 tmp_card = Image.open("data_sg/imgs/cards/{}.png".format(self.xi[str(i)]["plr"]["card_id"]))
                 tmp_card = tmp_card.resize((round(tmp_card.size[0] * 0.19), round(tmp_card.size[1] * 0.17)))
                 tmp_w, tmp_l = tmp_card.size
                 base.paste(tmp_card, (round(offsets[str(i)][0] - (tmp_w / 2)),
                                       round(offsets[str(i)][1] - (tmp_l / 2))), tmp_card)
+                draw.text((round(offsets[str(i)][0] - (na_w / 2.5)),
+                           round(offsets[str(i)][1] + (na_l / 2.5))), str(i), fill=txt_fill, font=font)
+                draw.text((round(offsets[str(i)][0] + (na_w / 3.5)),
+                           round(offsets[str(i)][1] + (na_l / 2.5))), str(self.xi[str(i)]["pos"]), fill=txt_fill, font=font)
+
         base.save(FINISHED_XI)
         return FINISHED_XI
 
