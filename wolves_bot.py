@@ -10,8 +10,7 @@ from wol_bot_static import token, teams, ha, pred_cols, twitter_apikey, twitter_
     twitter_access_token, twitter_secret_access_token, poll_channel, help_brief, help_desc
 import asyncio
 from random import randrange
-import json
-from SG2 import Player, Club, claim
+from SG2 import Player, Club, XI, claim, TEMP_CLUB
 
 # token - Discord bot token
 # teams - dictionary for converting team code to full team name
@@ -710,7 +709,7 @@ async def results(ctx, code):
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def sg_claim(ctx):
     new_plr = claim()
-    new_plr.get_card()
+    new_plr_card = new_plr.get_card()
 
     try:
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
@@ -721,16 +720,16 @@ async def sg_claim(ctx):
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
             json.dump(ex_clb, f, ensure_ascii=False, indent=4)
     except:
-        new_clb = {
-            "name" : str(ctx.author.id),
-            "squad" : [new_plr.to_dict()]
-        }
+        new_clb = Club(new=(str(ctx.author.id),new_plr)).to_dict()
+        new_xi = XI().to_dict()
 
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
             json.dump(new_clb, f, ensure_ascii=False, indent=4)
+        with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+            json.dump(new_xi, f, ensure_ascii=False, indent=4)
 
     await ctx.send("{} ({}) joins your club!".format(new_plr.name, new_plr.ctype))
-    await asyncio.wait([ctx.send(file=discord.File("finished_card.png"))])
+    await asyncio.wait([ctx.send(file=discord.File(new_plr_card))])
 
 @bot.command(hidden=True)
 @commands.cooldown(1, 5, commands.BucketType.user)
@@ -739,22 +738,117 @@ async def sg_club(ctx, page: int):
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
             ex_clb = Club(json.load(f))
             ex_clb.to_list(page)
-            await asyncio.wait([ctx.send(file=discord.File("data_sg/temp_club.png"))])
+            await asyncio.wait([ctx.send(file=discord.File(TEMP_CLUB))])
     except Exception as e:
         print(e)
         await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
 
 @bot.command(hidden=True)
 @commands.cooldown(1, 5, commands.BucketType.user)
-async def sg_show(ctx, player: str):
+async def sg_show(ctx, *player: str):
     try:
         with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
             ex_clb = Club(json.load(f))
-        msg = ex_clb.search(player)
-        await ctx.send(msg)
+
+        df_dist = ex_clb.search(" ".join(player))
+
+        if df_dist.shape[0] > 0:
+            match = df_dist.loc[0]
+            await ctx.send("```{} ({})  Rating: {}\nPosition: {}\nNation: {}\nTeam: {}\nLeague: {}\n\n" \
+            "PAC: {}     DRI: {}\nSHO: {}     DEF: {}\nPAS: {}     PHY: {}```".format(match["name"], match["ctype"],
+                                match["rat"], match["pos"], match["country"], match["tm"], match["leag"],
+                                match["pac"], match["dri"], match["sho"], match["dff"], match["pas"], match["phy"]))
+        else:
+            await ctx.send("No match for {}".format(player))
+
     except Exception as e:
         print(e)
         await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_add(ctx, *player: str):
+    try:
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+            ex_clb = Club(json.load(f))
+        df_dist = ex_clb.search(" ".join(player))
+        if df_dist.shape[0] > 0:
+            match = Player(df_dist.loc[0], "", "", "", "", "", "", pd_row_or_dict=True)
+            with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+                xi_obj = XI(source=json.load(f))
+
+            empty_ind = ""
+            exists = False
+            for i in reversed(range(1,12)):
+                temp = xi_obj.xi[str(i)]["plr"]
+                if temp != "":
+                    temp_plr = Player(xi_obj.xi[str(i)]["plr"], "", "", "", "", "", "", pd_row_or_dict=True)
+                    if temp_plr.unique_id() == match.unique_id():
+                        exists = True
+                        break
+                if xi_obj.xi[str(i)]["plr"] == "":
+                    empty_ind = str(i)
+
+            if empty_ind == "":
+                await ctx.send("XI is full.")
+            elif exists:
+                await ctx.send("Player is already in your XI.")
+            else:
+                xi_obj.xi[empty_ind]["plr"] = match.to_dict()
+
+                with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+                    json.dump(xi_obj.to_dict(), f, ensure_ascii=False, indent=4)
+                await ctx.send("{} was added to your XI.".format(match.name))
+        else:
+            await ctx.send("No match for {}".format(player))
+
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_del(ctx, *player: str):
+    try:
+        with open('data_sg/clubs/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+            ex_clb = Club(json.load(f))
+        df_dist = ex_clb.search(" ".join(player))
+        if df_dist.shape[0] > 0:
+            match = Player(df_dist.loc[0], "", "", "", "", "", "", pd_row_or_dict=True)
+            with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+                xi_obj = XI(source=json.load(f))
+
+            rpl_ind = ""
+            for i in range(1, 12):
+                temp = xi_obj.xi[str(i)]["plr"]
+                if temp != "":
+                    temp_plr = Player(xi_obj.xi[str(i)]["plr"], "", "", "", "", "", "", pd_row_or_dict=True)
+                    if temp_plr.unique_id() == match.unique_id():
+                        rpl_ind = str(i)
+                        break
+
+            if rpl_ind != "":
+                xi_obj.xi[rpl_ind]["plr"] = ""
+                with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'w', encoding='utf-8') as f:
+                    json.dump(xi_obj.to_dict(), f, ensure_ascii=False, indent=4)
+                await ctx.send("{} was removed from your XI.".format(match.name))
+            else:
+                await ctx.send("{} is not in your XI.".format(match.name))
+        else:
+            await ctx.send("No match for {}".format(player))
+
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        await ctx.send("<@{}> Your club does not exist! Type '$sg_claim' to get a player.".format(ctx.author.id))
+
+@bot.command(hidden=True)
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def sg_xi(ctx):
+    with open('data_sg/xis/{}.json'.format(str(ctx.author.id)), 'r', encoding='utf-8') as f:
+        xi_obj = XI(source=json.load(f))
+    await asyncio.wait([ctx.send(file=discord.File(xi_obj.to_img()))])
 
 ## error handlers
 

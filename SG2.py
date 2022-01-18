@@ -2,13 +2,17 @@ from __init__ import *
 
 from textdistance import levenshtein
 from PIL import Image, ImageDraw, ImageFont
-import pycountry
+import os.path
 
+TEMP_CLUB = "data_sg/imgs/temp_club.png"
 FINISHED_CARD = "data_sg/imgs/finished_card.png"
+FINISHED_XI = "data_sg/imgs/finished_xi.png"
 CARD_CLUB = "data_sg/imgs/card_club.png"
 CARD_NAT = "data_sg/imgs/card_nat.png"
 CARD_FACE = "data_sg/imgs/card_face.png"
 FONT_TYPE = "data_sg/static/arial-unicode-ms.ttf"
+FORM_MAPS = "data_sg/static/form_maps.json"
+FORM_OFFSETS = "data_sg/static/form_offsets.json"
 
 def claim():
     randnum = random.random()
@@ -26,6 +30,7 @@ def claim():
         url = "https://www.futhead.com/ut/random/redirect/?type=special"
         color = "Special"
 
+    print(color)
     req = requests.get(url)
     soup = BeautifulSoup(req.content, "html.parser")
 
@@ -57,44 +62,69 @@ def claim():
     for x in range(1, 7):
         stats.append(int(soup.select_one(".playercard-attr.playercard-attr" + str(x)).text.strip().split(" ")[0]))
 
+    print(req.url)
     card_id = req.url.replace("https://www.futhead.com/22/players/", "").split("/")[0]
 
     return Player(name, rating, position, stats, color, card_id, info_tbl)
 
 class Player:
 
-    def __init__(self, name, rating, pos, stats, ctype, card_id, info_tbl):
-        self.card_id = card_id
-        self.name = name
-        self.rating = rating
-        self.pos = pos
-        self.pac = stats[0]
-        self.sho = stats[1]
-        self.pas = stats[2]
-        self.dri = stats[3]
-        self.dff = stats[4]
-        self.phy = stats[5]
-        self.ctype = ctype
-        self.team = info_tbl["Club"]
-        self.leag = info_tbl["League"]
-        self.country = info_tbl["Nation"]
-        self.age = info_tbl["Age"]
-        self.height = info_tbl["Height"]
-        self.wkr = info_tbl["Workrates"]
-        self.nat_img = info_tbl["nat_logo"]
-        self.face_img = info_tbl["img_num"]
-        self.clb_img = info_tbl["clb_logo"]
+    def __init__(self, name, rating, pos, stats, ctype, card_id, info_tbl, pd_row_or_dict=False):
+        if pd_row_or_dict:
+            self.card_id = name["card_id"]
+            self.name = name["name"]
+            self.rating = int(name["rat"])
+            self.pos = name["pos"]
+            self.pac = int(name["pac"])
+            self.sho = int(name["sho"])
+            self.pas = int(name["pas"])
+            self.dri = int(name["dri"])
+            self.dff = int(name["dff"])
+            self.phy = int(name["phy"])
+            self.ctype = name["ctype"]
+            self.team = name["tm"]
+            self.leag = name["leag"]
+            self.country = name["country"]
+            self.age = name["age"]
+            self.height = name["height"]
+            self.wkr = name["wkr"]
+            self.nat_img = name["nat_img"]
+            self.face_img = name["clb_img"]
+            self.clb_img = name["face_img"]
+        else:
+            self.card_id = card_id
+            self.name = name
+            self.rating = int(rating)
+            self.pos = pos
+            self.pac = int(stats[0])
+            self.sho = int(stats[1])
+            self.pas = int(stats[2])
+            self.dri = int(stats[3])
+            self.dff = int(stats[4])
+            self.phy = int(stats[5])
+            self.ctype = ctype
+            self.team = info_tbl["Club"]
+            self.leag = info_tbl["League"]
+            self.country = info_tbl["Nation"]
+            self.age = info_tbl["Age"]
+            self.height = info_tbl["Height"]
+            self.wkr = info_tbl["Workrates"]
+            self.nat_img = info_tbl["nat_logo"]
+            self.face_img = info_tbl["img_num"]
+            self.clb_img = info_tbl["clb_logo"]
 
     def unique_id(self):
-        return "{}{}{}".format(self.name.replace(""), self.height, self.age)
+        return "{}{}{}".format(self.name.replace(" ", ""), self.height, self.age)
 
     def to_dict(self):
-        return {"name" : self.name, "rat" : self.rating, "pos" : self.pos, "pac" : self.pac, "sho" : self.sho,
+        return {"card_id" : self.card_id, "name" : self.name, "rat" : self.rating, "pos" : self.pos, "pac" : self.pac, "sho" : self.sho,
                 "pas" : self.pas, "dri" : self.dri, "dff" : self.dff, "phy" : self.phy, "tm" : self.team,
                 "leag" : self.leag, "country" : self.country, "ctype" : self.ctype, "age" : self.age, "height" : self.height,
                 "wkr" : self.wkr, "nat_img" : self.nat_img, "clb_img" : self.clb_img, "face_img" : self.face_img}
 
     def get_card(self):
+        if os.path.isfile("data_sg/imgs/cards/{}.png".format(self.unique_id())):
+            return "data_sg/imgs/cards/{}.png".format(self.unique_id())
         face_url = "https://futhead.cursecdn.com/static/img/22/players/{}.png".format(self.face_img)
         club_url = "https://futhead.cursecdn.com/static/img/22/clubs/{}".format(self.clb_img)
         nat_url = "https://futhead.cursecdn.com/static/img/22/nations/{}".format(self.nat_img)
@@ -134,7 +164,7 @@ class Player:
         base.paste(face,(480, 300), face)
 
         ctr_line = 370
-        w, h = draw.textsize(self.rating, rat_font)
+        w, h = draw.textsize(str(self.rating), rat_font)
         draw.text((ctr_line - (round(w/2)), 200), str(self.rating), fill=txt_fill, font=rat_font)
         w, h = draw.textsize(self.pos, font)
         draw.text((ctr_line - (round(w/2)), 420), self.pos, txt_fill, font=font)
@@ -165,24 +195,27 @@ class Player:
         draw.text((mid_x - (round(name_w / 2)), y_name), self.name, fill=txt_fill, font=name_font)
 
         base.save(FINISHED_CARD)
+        base.save("data_sg/imgs/cards/{}.png".format(self.card_id))
+        return FINISHED_CARD
 
 class Club:
-    def __init__(self, source):
-        self.df_club = pd.DataFrame.from_records(source["squad"])
-        self.name = source["name"]
+    def __init__(self, source=None, new=None):
+        if new == None:
+            self.df_club = pd.DataFrame.from_records(source["squad"])
+            self.name = source["name"]
+        else:
+            self.name = new[0]
+            self.df_club = [new[1].to_dict()]
 
     def search(self, player):
-        self.df_club["levdist"] = self.df_club.apply(lambda x: levenshtein.distance(x['name'].lower(),  player.lower()), axis=1)
+        self.df_club["norm name"] = self.df_club['name'].str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
+        self.df_club["levdist"] = self.df_club.apply(lambda x: levenshtein.distance(x['norm name'].lower(),  player.lower()), axis=1)
         df_dist = self.df_club[self.df_club["levdist"] < 2].sort_values(by="levdist").reset_index()
+        print(df_dist)
+        return df_dist
 
-        if df_dist.shape[0] > 0:
-            match = df_dist.loc[0]
-            return "```{} ({})  Rating: {}\nPosition: {}\nNation: {}\nTeam: {}\nLeague: {}\n\n" \
-            "PAC: {}     DRI: {}\nSHO: {}     DEF: {}\nPAS: {}     PHY: {}```".format(match["name"], match["ctype"],
-                                match["rat"], match["pos"], match["country"], match["tm"], match["leag"],
-                                match["pac"], match["dri"], match["sho"], match["dff"], match["pas"], match["phy"])
-        else:
-            return "No match for {}".format(player)
+    def to_dict(self):
+        return {"name" : self.name, "squad" : self.df_club}
 
     def to_list(self, inp_page):
         if inp_page * 10 > self.df_club.shape[0]:
@@ -202,8 +235,57 @@ class Club:
         tbl.auto_set_font_size(False)
         tbl.set_fontsize(10)
         tbl.auto_set_column_width(col=list(range(clb_page.shape[1])))
-        plt.savefig('data_sg/temp_club.png')
+        plt.savefig(TEMP_CLUB)
         ax.clear()
+
+class XI:
+
+    def __init__(self, form="442", source=None):
+        if source == None:
+            self.xi = {}
+            for x in range(1,12):
+                self.xi[str(x)] = {"pos" : "", "plr" : ""}
+            self.form = "442"
+            self.map_positions()
+        else:
+            self.xi = source["xi"]
+            self.form = source["form"]
+
+    def map_positions(self):
+        self.xi["1"]["pos"] = "GK"
+
+        with open(FORM_MAPS, 'r', encoding='utf-8') as f:
+            maps = json.load(f)
+
+        for i in range(2,12):
+            self.xi[str(i)]["pos"] = maps[self.form][str(i)]
+
+    def to_img(self):
+        with open(FORM_MAPS, 'r', encoding='utf-8') as f:
+            maps = json.load(f)[self.form]
+        with open(FORM_OFFSETS, 'r', encoding='utf-8') as f:
+            offsets = json.load(f)[self.form]
+
+        base = Image.open("data_sg/imgs/xi_bg.png").convert("RGBA")
+        base = base.resize((1200, 1200))
+        na_card = Image.open("data_sg/imgs/no_card.png").convert("RGBA")
+        na_card = na_card.resize((round(na_card.size[0] * 0.34), round(na_card.size[1] * 0.3)))
+        na_w, na_l = na_card.size
+        for i in range(1,12):
+            if self.xi[str(i)]["plr"] == "":
+                base.paste(na_card, (round(offsets[str(i)][0] - (na_w / 2)),
+                                     round(offsets[str(i)][1] - (na_l / 2))), na_card)
+            else:
+                tmp_card = Image.open("data_sg/imgs/cards/{}.png".format(self.xi[str(i)]["plr"]["card_id"]))
+                tmp_card = tmp_card.resize((round(tmp_card.size[0] * 0.19), round(tmp_card.size[1] * 0.17)))
+                tmp_w, tmp_l = tmp_card.size
+                base.paste(tmp_card, (round(offsets[str(i)][0] - (tmp_w / 2)),
+                                      round(offsets[str(i)][1] - (tmp_l / 2))), tmp_card)
+        base.save(FINISHED_XI)
+        return FINISHED_XI
+
+    def to_dict(self):
+        return {"form" : self.form, "xi" : self.xi}
 
 if __name__ == "__main__":
     test_plr = claim()

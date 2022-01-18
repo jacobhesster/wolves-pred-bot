@@ -1,5 +1,6 @@
 wol_bot_static.py
 data_wol/**
+data_sg/imgs/cards/**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
